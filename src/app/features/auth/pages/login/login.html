@@ -1,0 +1,30 @@
+<app-default-login-layout
+    title="Bem-vindo à Somar"
+    primaryBtnText="Entrar"
+    secundaryBtnText="Criar conta"
+    (submit)="submit()"
+    (navigate)="navigate()"
+    [disablePrimaryBtn]="!loginForm.valid"
+>
+    <form [formGroup]="loginForm">
+        <app-primary-input
+            formControlName="email"
+            inputName="email"    
+            type="email"
+            label="E-mail"
+            placeHolder="seu@email.com"
+        >
+            <img src="svg/login.svg">
+        </app-primary-input>
+
+        <app-primary-input
+            formControlName="senha"
+            inputName="senha"    
+            type="password"
+            label="Senha"
+        >
+            <img src="svg/password.svg">
+        </app-primary-input>
+        <span>Esqueceu a senha?</span>
+    </form>
+</app-default-login-layout>

@@ -1,0 +1,142 @@
+<div class="voluntarios-container">
+  <header class="page-header">
+    <div>
+      <h1>🤝 Voluntariado</h1>
+      <p *ngIf="userType === 'ong'">Gerencie suas oportunidades de voluntariado</p>
+      <p *ngIf="userType !== 'ong'">Encontre oportunidades para fazer a diferença</p>
+    </div>
+    <app-theme-language-toggle></app-theme-language-toggle>
+  </header>
+
+  <!-- Filtros -->
+  <section class="filters-section">
+    <div class="filters-grid">
+      <div class="filter-item">
+        <label>🔍 Buscar</label>
+        <input 
+          type="text" 
+          [(ngModel)]="searchQuery"
+          (input)="applyFilters()"
+          placeholder="Pesquisar oportunidades..."
+          class="filter-input"
+        />
+      </div>
+
+      <div class="filter-item">
+        <label>📂 Categoria</label>
+        <select 
+          [(ngModel)]="selectedCategory"
+          (change)="applyFilters()"
+          class="filter-select"
+        >
+          <option value="">Todas</option>
+          <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+        </select>
+      </div>
+
+      <div class="filter-item" *ngIf="userType === 'ong'">
+        <label>📊 Status</label>
+        <select 
+          [(ngModel)]="selectedStatus"
+          (change)="applyFilters()"
+          class="filter-select"
+        >
+          <option value="">Todos</option>
+          <option value="open">Aberta</option>
+          <option value="full">Completa</option>
+          <option value="closed">Fechada</option>
+        </select>
+      </div>
+
+      <button class="btn-clear" (click)="clearFilters()">
+        Limpar Filtros
+      </button>
+    </div>
+
+    <p class="results-count">
+      {{ filteredOpportunities.length }} oportunidade(s) encontrada(s)
+    </p>
+  </section>
+
+  <!-- Minhas Inscrições (para doadores) -->
+  <section class="my-registrations" *ngIf="userType !== 'ong' && myRegistrations.length > 0">
+    <h2>📋 Minhas Inscrições</h2>
+    <div class="registrations-grid">
+      <div class="registration-card" *ngFor="let reg of myRegistrations">
+        <div class="reg-header">
+          <span class="reg-status" [class.confirmed]="reg.status === 'confirmed'" 
+                                   [class.pending]="reg.status === 'pending'"
+                                   [class.cancelled]="reg.status === 'cancelled'">
+            {{ reg.status === 'confirmed' ? '✅ Confirmado' : 
+               reg.status === 'pending' ? '⏳ Pendente' : '❌ Cancelado' }}
+          </span>
+        </div>
+        <p class="reg-date">Inscrito em: {{ reg.registeredAt | date:'dd/MM/yyyy HH:mm' }}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lista de Oportunidades -->
+  <section class="opportunities-section">
+    <div class="opportunities-grid">
+      <div class="opportunity-card" *ngFor="let opp of filteredOpportunities">
+        <div class="opp-header">
+          <span class="opp-badge" [style.background-color]="getStatusColor(opp.status)">
+            {{ getStatusLabel(opp.status) }}
+          </span>
+          <span class="opp-category">{{ opp.category }}</span>
+        </div>
+
+        <h3>{{ opp.title }}</h3>
+        <p class="opp-description">{{ opp.description }}</p>
+
+        <div class="opp-info">
+          <div class="info-item">
+            <span class="info-icon">🏢</span>
+            <span>{{ opp.ongName }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-icon">📅</span>
+            <span>{{ opp.date | date:'dd/MM/yyyy' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-icon">⏰</span>
+            <span>{{ opp.time }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-icon">📍</span>
+            <span>{{ opp.location }}</span>
+          </div>
+        </div>
+
+        <div class="opp-vacancies">
+          <div class="vacancies-bar">
+            <div class="vacancies-fill" 
+                 [style.width.%]="(opp.currentVolunteers / opp.vacancies) * 100">
+            </div>
+          </div>
+          <span class="vacancies-text">{{ getVacanciesInfo(opp) }}</span>
+        </div>
+
+        <div class="opp-skills" *ngIf="opp.skills && opp.skills.length > 0">
+          <span class="skill-tag" *ngFor="let skill of opp.skills">{{ skill }}</span>
+        </div>
+
+        <div class="opp-actions">
+          <button class="btn-view" (click)="viewDetails(opp)">
+            Ver Detalhes
+          </button>
+          <div class="registration-status" *ngIf="userType !== 'ong' && isRegistered(opp.id)">
+            <span class="status-badge">{{ getRegistrationStatus(opp.id) }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="empty-state" *ngIf="filteredOpportunities.length === 0">
+      <div class="empty-icon">🤝</div>
+      <h3>Nenhuma oportunidade encontrada</h3>
+      <p>{{ userType === 'ong' ? 'Crie uma nova oportunidade de voluntariado' : 'Tente ajustar os filtros' }}</p>
+    </div>
+  </section>
+</div>

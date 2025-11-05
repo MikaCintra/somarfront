@@ -1,0 +1,209 @@
+<div class="modal-backdrop" *ngIf="isOpen && campaign" (click)="onBackdropClick($event)">
+  <div class="modal-container large">
+    <!-- Header -->
+    <div class="modal-header">
+      <div class="header-content">
+        <div class="campaign-icon">{{ getCategoryIcon() }}</div>
+        <div class="header-text">
+          <h2>{{ campaign.title }}</h2>
+          <p class="ong-name">{{ campaign.ongName }}</p>
+        </div>
+      </div>
+      <button class="close-button" (click)="onClose()" aria-label="Fechar">
+        <span>✕</span>
+      </button>
+    </div>
+
+    <!-- Tabs Navigation -->
+    <div class="tabs-navigation">
+      <button 
+        class="tab-button" 
+        [class.active]="activeTab === 'details'"
+        (click)="setActiveTab('details')">
+        📋 Detalhes
+      </button>
+      <button 
+        class="tab-button" 
+        [class.active]="activeTab === 'donations'"
+        (click)="setActiveTab('donations')">
+        💝 Doações ({{ getTotalDonations() }})
+      </button>
+      <button 
+        class="tab-button" 
+        [class.active]="activeTab === 'volunteers'"
+        (click)="setActiveTab('volunteers')">
+        🤝 Voluntários ({{ volunteers.length }})
+      </button>
+      <button 
+        class="tab-button" 
+        [class.active]="activeTab === 'gallery'"
+        (click)="setActiveTab('gallery')">
+        📸 Galeria
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="modal-body">
+      
+      <!-- Tab: Detalhes -->
+      <div class="tab-content" *ngIf="activeTab === 'details'">
+        <!-- Estatísticas Rápidas -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon">💝</div>
+            <div class="stat-info">
+              <span class="stat-value">{{ getTotalDonations() }}</span>
+              <span class="stat-label">Doações</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">👥</div>
+            <div class="stat-info">
+              <span class="stat-value">{{ getUniqueDonors() }}</span>
+              <span class="stat-label">Doadores</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">📦</div>
+            <div class="stat-info">
+              <span class="stat-value">{{ getTotalItems() }}</span>
+              <span class="stat-label">Itens recebidos</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">📊</div>
+            <div class="stat-info">
+              <span class="stat-value">{{ getProgressPercentage() }}%</span>
+              <span class="stat-label">Progresso</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Barra de Progresso -->
+        <div class="progress-section">
+          <div class="progress-header">
+            <span class="progress-label">Progresso da Meta</span>
+            <span class="progress-percentage">{{ getProgressPercentage() }}%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="getProgressPercentage()"></div>
+          </div>
+          <p class="progress-goal">Meta: {{ campaign.goal }}</p>
+        </div>
+
+        <!-- Informações da Campanha -->
+        <div class="info-section">
+          <h3>📝 Sobre a Campanha</h3>
+          <p class="campaign-description">{{ campaign.description }}</p>
+        </div>
+
+        <div class="info-section">
+          <h3>🏷️ Categoria</h3>
+          <div class="category-badge">
+            {{ getCategoryIcon() }} {{ getCategoryLabel() }}
+          </div>
+          <div class="urgency-badge" *ngIf="campaign.urgent">
+            🚨 Campanha Urgente
+          </div>
+        </div>
+
+        <div class="info-section">
+          <h3>🏢 Sobre a ONG</h3>
+          <div class="ong-info">
+            <p><strong>Nome:</strong> {{ campaign.ongName }}</p>
+            <p><strong>Contato:</strong> {{ campaign.ongEmail }}</p>
+          </div>
+        </div>
+
+        <!-- Ações -->
+        <div class="actions-section">
+          <button class="btn btn-primary" (click)="onClose()">
+            💝 Fazer Doação
+          </button>
+          <button class="btn btn-secondary" (click)="shareCampaign()">
+            📤 Compartilhar
+          </button>
+          <button class="btn btn-secondary" (click)="downloadReport()">
+            📄 Baixar Relatório
+          </button>
+        </div>
+      </div>
+
+      <!-- Tab: Doações -->
+      <div class="tab-content" *ngIf="activeTab === 'donations'">
+        <div class="donations-list" *ngIf="campaign.donations && campaign.donations.length > 0">
+          <div class="donation-item" *ngFor="let donation of campaign.donations">
+            <div class="donation-avatar">
+              {{ donation.donorName.charAt(0).toUpperCase() }}
+            </div>
+            <div class="donation-info">
+              <h4>{{ donation.donorName }}</h4>
+              <p class="donation-detail">
+                <strong>{{ donation.item }}</strong> - {{ donation.quantity }}
+              </p>
+              <p class="donation-date">{{ formatDateTime(donation.date) }}</p>
+              <p class="donation-address" *ngIf="donation.collectionAddress">
+                📍 {{ donation.collectionAddress }}
+              </p>
+              <p class="donation-phone" *ngIf="donation.contactPhone">
+                📞 {{ donation.contactPhone }}
+              </p>
+              <p class="donation-obs" *ngIf="donation.observations">
+                💬 {{ donation.observations }}
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="empty-state" *ngIf="!campaign.donations || campaign.donations.length === 0">
+          <p>📦 Ainda não há doações para esta campanha.</p>
+          <p><small>Seja o primeiro a contribuir!</small></p>
+        </div>
+      </div>
+
+      <!-- Tab: Voluntários -->
+      <div class="tab-content" *ngIf="activeTab === 'volunteers'">
+        <div class="volunteers-list" *ngIf="volunteers.length > 0">
+          <div class="volunteer-item" *ngFor="let volunteer of volunteers">
+            <div class="volunteer-avatar">
+              {{ volunteer.volunteerName.charAt(0).toUpperCase() }}
+            </div>
+            <div class="volunteer-info">
+              <h4>{{ volunteer.volunteerName }}</h4>
+              <p class="volunteer-contact">📞 {{ volunteer.phone }}</p>
+              <p class="volunteer-email">📧 {{ volunteer.volunteerEmail }}</p>
+              <p class="volunteer-message" *ngIf="volunteer.message">
+                💬 "{{ volunteer.message }}"
+              </p>
+              <p class="volunteer-date">
+                Inscrito em {{ formatDate(volunteer.registeredAt) }}
+              </p>
+              <div class="volunteer-status" [class]="volunteer.status">
+                <span *ngIf="volunteer.status === 'confirmed'">✅ Confirmado</span>
+                <span *ngIf="volunteer.status === 'pending'">⏳ Pendente</span>
+                <span *ngIf="volunteer.status === 'cancelled'">❌ Cancelado</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="empty-state" *ngIf="volunteers.length === 0">
+          <p>🤝 Ainda não há voluntários para esta campanha.</p>
+          <p><small>Convide pessoas para ajudar!</small></p>
+        </div>
+      </div>
+
+      <!-- Tab: Galeria -->
+      <div class="tab-content" *ngIf="activeTab === 'gallery'">
+        <div class="gallery-grid" *ngIf="galleryImages.length > 0">
+          <div class="gallery-item" *ngFor="let image of galleryImages">
+            <img [src]="image" alt="Foto da campanha" />
+          </div>
+        </div>
+        <div class="empty-state" *ngIf="galleryImages.length === 0">
+          <p>📸 Ainda não há fotos para esta campanha.</p>
+          <p><small>Adicione fotos para mostrar o impacto!</small></p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

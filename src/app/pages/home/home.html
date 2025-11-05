@@ -1,0 +1,74 @@
+<div class="home-container">
+  <!-- Hero Section -->
+  <section class="hero">
+    <nav class="navbar">
+      <div class="logo">
+        <img src="svg/logo-somar.svg" alt="Somar Logo" />
+        <span>Somar</span>
+      </div>
+      <div class="nav-actions">
+        <button class="btn-text" (click)="navigateToLogin()">Entrar</button>
+        <button class="btn-primary" (click)="navigateToSignup()">Cadastre-se</button>
+      </div>
+    </nav>
+
+    <div class="hero-content">
+      <h1>Conectando Solidariedade</h1>
+      <p class="hero-subtitle">
+        Una ONGs, doadores e voluntários em uma plataforma que transforma boas intenções em ações concretas
+      </p>
+      <div class="hero-actions">
+        <button class="btn-large btn-primary" (click)="navigateToSignup()">
+          Comece Agora
+        </button>
+        <button class="btn-large btn-secondary" (click)="navigateToLogin()">
+          Sou uma ONG
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features">
+    <h2>Por que escolher a Somar?</h2>
+    <div class="features-grid">
+      <div class="feature-card" *ngFor="let feature of features">
+        <div class="feature-icon">{{ feature.icon }}</div>
+        <h3>{{ feature.title }}</h3>
+        <p>{{ feature.description }}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works Section -->
+  <section class="how-it-works">
+    <h2>Como Funciona</h2>
+    <div class="steps">
+      <div class="step" *ngFor="let step of howItWorks">
+        <div class="step-number">{{ step.step }}</div>
+        <h3>{{ step.title }}</h3>
+        <p>{{ step.description }}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta">
+    <h2>Pronto para fazer a diferença?</h2>
+    <p>Junte-se a centenas de pessoas e organizações transformando vidas</p>
+    <button class="btn-large btn-primary" (click)="navigateToSignup()">
+      Criar Conta Gratuita
+    </button>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-logo">
+        <img src="svg/logo-somar.svg" alt="Somar Logo" />
+        <span>Somar</span>
+      </div>
+      <p>&copy; 2025 Somar. Conectando solidariedade.</p>
+    </div>
+  </footer>
+</div>

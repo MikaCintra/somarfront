@@ -1,0 +1,482 @@
+<div class="dashboard-content">
+  <!-- Header -->
+  <header class="dashboard-header">
+    <div>
+      <h1>Bem-vinda, {{ currentUserName }}! 👋</h1>
+      <p>Gerencie suas campanhas e acompanhe o impacto social</p>
+    </div>
+    <div class="header-actions">
+        <app-theme-language-toggle></app-theme-language-toggle>
+        <button class="btn-primary" (click)="openNewCampaignModal()">+ Nova Campanha</button>
+      </div>
+    </header>
+
+    <!-- Stats Cards -->
+    <section class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon green">📢</div>
+        <div class="stat-info">
+          <h3>Campanhas Ativas</h3>
+          <p class="stat-value">{{ campaigns.length }}</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon blue">🤝</div>
+        <div class="stat-info">
+          <h3>Doadores Ativos</h3>
+          <p class="stat-value">{{ donorsStats.active }}</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon orange">💝</div>
+        <div class="stat-info">
+          <h3>Total de Doações</h3>
+          <p class="stat-value">{{ donorsStats.totalDonations }}</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon purple">📈</div>
+        <div class="stat-info">
+          <h3>Horas Voluntárias</h3>
+          <p class="stat-value">{{ donorsStats.totalVolunteerHours }}h</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Campaigns Section -->
+    <section class="section">
+      <h2>Campanhas em Andamento</h2>
+      <div class="campaigns-grid">
+        <div class="campaign-card" *ngFor="let campaign of campaigns">
+          <div class="campaign-header">
+            <h3>{{ campaign.title }}</h3>
+            <span class="badge">{{ campaign.category }}</span>
+          </div>
+          <p class="campaign-description">{{ campaign.description }}</p>
+          <div class="campaign-progress">
+            <div class="progress-bar">
+              <div class="progress-fill" [style.width.%]="getProgress(campaign)"></div>
+            </div>
+            <div class="progress-info">
+              <span>{{ campaign.current }} / {{ campaign.goal }} itens</span>
+              <span class="progress-percent">{{ getProgress(campaign) | number:'1.0-0' }}%</span>
+            </div>
+          </div>
+          <div class="campaign-actions">
+            <button class="btn-text" (click)="openEditCampaignModal(campaign)">✏️ Editar</button>
+            <button class="btn-text btn-danger" (click)="deleteCampaign(campaign.id)">🗑️ Excluir</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Volunteers Section -->
+    <section class="section">
+      <div class="section-header">
+        <h2>Oportunidades de Voluntariado</h2>
+        <button class="btn-primary" (click)="openNewVolunteerModal()">➕ Nova Oportunidade</button>
+      </div>
+
+      <div class="opportunities-grid" *ngIf="opportunities.length > 0">
+        <div class="opportunity-card" *ngFor="let opp of opportunities">
+          <div class="opportunity-header">
+            <h3>{{ opp.title }}</h3>
+            <span class="vacancy-badge" [ngClass]="getVacancyClass(opp)">
+              {{ getVacancyStatus(opp) }}
+            </span>
+          </div>
+          
+          <p class="opportunity-description">{{ opp.description }}</p>
+          
+          <div class="opportunity-details">
+            <div class="detail-item">
+              <span class="detail-icon">📅</span>
+              <span>{{ opp.date | date:'dd/MM/yyyy' }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-icon">⏰</span>
+              <span>{{ opp.time }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-icon">📍</span>
+              <span>{{ opp.location }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-icon">👥</span>
+              <span>{{ opp.currentVolunteers }} / {{ opp.vacancies }} inscritos</span>
+            </div>
+          </div>
+
+          <div class="skills-tags" *ngIf="opp.skills && opp.skills.length > 0">
+            <span class="skill-tag" *ngFor="let skill of opp.skills">{{ skill }}</span>
+          </div>
+
+          <div class="opportunity-actions">
+            <button class="btn-text" (click)="viewRegistrations(opp)">
+              👁️ Ver Inscritos ({{ opp.currentVolunteers }})
+            </button>
+            <button class="btn-text" (click)="openEditVolunteerModal(opp)">✏️ Editar</button>
+            <button class="btn-text btn-danger" (click)="deleteVolunteerOpportunity(opp.id)">🗑️ Excluir</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="empty-state" *ngIf="opportunities.length === 0">
+        <p>🌟 Nenhuma oportunidade de voluntariado criada ainda.</p>
+        <p>Clique em "Nova Oportunidade" para começar!</p>
+      </div>
+    </section>
+
+    <!-- Top Donors Section -->
+    <section class="section">
+      <div class="section-header">
+        <h2>🏆 Top Doadores</h2>
+        <p class="section-subtitle">Os doadores mais engajados da plataforma</p>
+      </div>
+
+      <div class="donors-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Posição</th>
+              <th>Doador</th>
+              <th>Localização</th>
+              <th>Doações</th>
+              <th>Horas Voluntárias</th>
+              <th>Nível</th>
+              <th>Última Atividade</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let donor of donors.slice(0, 10); let i = index" class="donor-row">
+              <td class="rank-cell">
+                <span class="rank-badge" [ngClass]="i < 3 ? 'rank-top' : ''">
+                  {{ i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '#' + (i + 1) }}
+                </span>
+              </td>
+              <td class="donor-cell">
+                <div class="donor-info">
+                  <img [src]="donor.avatarUrl" [alt]="donor.name" class="donor-avatar" />
+                  <div>
+                    <strong>{{ donor.name }}</strong>
+                    <small>{{ donor.email }}</small>
+                  </div>
+                </div>
+              </td>
+              <td>{{ donor.address?.city }}, {{ donor.address?.state }}</td>
+              <td class="donations-cell">
+                <strong>{{ donor.totalDonations }}</strong>
+                <small>doações</small>
+              </td>
+              <td class="hours-cell">
+                <strong>{{ donor.totalVolunteerHours }}h</strong>
+              </td>
+              <td>
+                <span class="level-badge" [ngClass]="'level-' + (donor.level <= 5 ? 'low' : donor.level <= 10 ? 'medium' : 'high')">
+                  Nível {{ donor.level }}
+                </span>
+              </td>
+              <td class="activity-cell">
+                <small>{{ donor.lastLogin | date:'dd/MM/yyyy' }}</small>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="donors-stats-summary">
+        <div class="stat-summary-card">
+          <span class="stat-icon">👥</span>
+          <div>
+            <strong>{{ donorsStats.total }}</strong>
+            <small>Total de Doadores</small>
+          </div>
+        </div>
+        <div class="stat-summary-card">
+          <span class="stat-icon">📊</span>
+          <div>
+            <strong>{{ donorsStats.averageDonationsPerDonor }}</strong>
+            <small>Média de Doações/Doador</small>
+          </div>
+        </div>
+        <div class="stat-summary-card">
+          <span class="stat-icon">⏱️</span>
+          <div>
+            <strong>{{ donorsStats.averageVolunteerHoursPerDonor }}h</strong>
+            <small>Média de Horas/Doador</small>
+          </div>
+        </div>
+        <div class="stat-summary-card">
+          <span class="stat-icon">⭐</span>
+          <div>
+            <strong>{{ donorsStats.topDonor.name }}</strong>
+            <small>Top Doador ({{ donorsStats.topDonor.totalDonations }} doações)</small>
+          </div>
+        </div>
+      </div>
+    </section>
+
+<!-- Modal de Criação/Edição de Campanha -->
+<app-modal 
+  [isOpen]="isModalOpen" 
+  [title]="editingCampaign ? 'Editar Campanha' : 'Nova Campanha'"
+  size="medium"
+  (close)="closeModal()">
+  
+  <form [formGroup]="campaignForm" (ngSubmit)="saveCampaign()">
+    <div class="form-group">
+      <label for="title">Título da Campanha *</label>
+      <input 
+        type="text" 
+        id="title" 
+        formControlName="title"
+        placeholder="Ex: Campanha do Agasalho 2025"
+        class="form-input"
+      />
+      <span class="error-message" *ngIf="campaignForm.get('title')?.invalid && campaignForm.get('title')?.touched">
+        Título deve ter no mínimo 5 caracteres
+      </span>
+    </div>
+
+    <div class="form-group">
+      <label for="description">Descrição *</label>
+      <textarea 
+        id="description" 
+        formControlName="description"
+        rows="4"
+        placeholder="Descreva os objetivos e detalhes da campanha..."
+        class="form-input"
+      ></textarea>
+      <span class="error-message" *ngIf="campaignForm.get('description')?.invalid && campaignForm.get('description')?.touched">
+        Descrição deve ter no mínimo 10 caracteres
+      </span>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="goal">Meta (quantidade de itens) *</label>
+        <input 
+          type="number" 
+          id="goal" 
+          formControlName="goal"
+          min="1"
+          class="form-input"
+        />
+        <span class="error-message" *ngIf="campaignForm.get('goal')?.invalid && campaignForm.get('goal')?.touched">
+          Meta deve ser maior que 0
+        </span>
+      </div>
+
+      <div class="form-group">
+        <label for="category">Categoria *</label>
+        <select 
+          id="category" 
+          formControlName="category"
+          class="form-input"
+        >
+          <option value="">Selecione uma categoria</option>
+          <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+        </select>
+        <span class="error-message" *ngIf="campaignForm.get('category')?.invalid && campaignForm.get('category')?.touched">
+          Selecione uma categoria
+        </span>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="location">Localização *</label>
+      <input 
+        type="text" 
+        id="location" 
+        formControlName="location"
+        placeholder="Ex: São Paulo, SP"
+        class="form-input"
+      />
+      <span class="error-message" *ngIf="campaignForm.get('location')?.invalid && campaignForm.get('location')?.touched">
+        Localização é obrigatória
+      </span>
+    </div>
+
+    <div class="modal-actions">
+      <button type="button" class="btn-secondary" (click)="closeModal()">Cancelar</button>
+      <button type="submit" class="btn-primary" [disabled]="campaignForm.invalid">
+        {{ editingCampaign ? 'Salvar Alterações' : 'Criar Campanha' }}
+      </button>
+    </div>
+  </form>
+</app-modal>
+
+<!-- Modal de Criação/Edição de Oportunidade de Voluntariado -->
+<app-modal 
+  [isOpen]="isVolunteerModalOpen" 
+  [title]="editingOpportunity ? 'Editar Oportunidade' : 'Nova Oportunidade de Voluntariado'"
+  size="large"
+  (close)="closeVolunteerModal()">
+  
+  <form [formGroup]="volunteerForm" (ngSubmit)="saveVolunteerOpportunity()">
+    <div class="form-group">
+      <label for="vol-title">Título da Oportunidade *</label>
+      <input 
+        type="text" 
+        id="vol-title" 
+        formControlName="title"
+        placeholder="Ex: Distribuição de Alimentos"
+        class="form-input"
+      />
+      <span class="error-message" *ngIf="volunteerForm.get('title')?.invalid && volunteerForm.get('title')?.touched">
+        Título deve ter no mínimo 5 caracteres
+      </span>
+    </div>
+
+    <div class="form-group">
+      <label for="vol-description">Descrição *</label>
+      <textarea 
+        id="vol-description" 
+        formControlName="description"
+        rows="3"
+        placeholder="Descreva as atividades que o voluntário irá realizar..."
+        class="form-input"
+      ></textarea>
+      <span class="error-message" *ngIf="volunteerForm.get('description')?.invalid && volunteerForm.get('description')?.touched">
+        Descrição deve ter no mínimo 10 caracteres
+      </span>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="vol-date">Data *</label>
+        <input 
+          type="date" 
+          id="vol-date" 
+          formControlName="date"
+          class="form-input"
+        />
+        <span class="error-message" *ngIf="volunteerForm.get('date')?.invalid && volunteerForm.get('date')?.touched">
+          Data é obrigatória
+        </span>
+      </div>
+
+      <div class="form-group">
+        <label for="vol-time">Horário *</label>
+        <input 
+          type="text" 
+          id="vol-time" 
+          formControlName="time"
+          placeholder="Ex: 09:00 - 13:00"
+          class="form-input"
+        />
+        <span class="error-message" *ngIf="volunteerForm.get('time')?.invalid && volunteerForm.get('time')?.touched">
+          Horário é obrigatório
+        </span>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="vol-location">Local *</label>
+      <input 
+        type="text" 
+        id="vol-location" 
+        formControlName="location"
+        placeholder="Ex: Centro - São Paulo, SP"
+        class="form-input"
+      />
+      <span class="error-message" *ngIf="volunteerForm.get('location')?.invalid && volunteerForm.get('location')?.touched">
+        Local é obrigatório
+      </span>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="vol-vacancies">Número de Vagas *</label>
+        <input 
+          type="number" 
+          id="vol-vacancies" 
+          formControlName="vacancies"
+          min="1"
+          class="form-input"
+        />
+        <span class="error-message" *ngIf="volunteerForm.get('vacancies')?.invalid && volunteerForm.get('vacancies')?.touched">
+          Deve ter pelo menos 1 vaga
+        </span>
+      </div>
+
+      <div class="form-group">
+        <label for="vol-category">Categoria *</label>
+        <select 
+          id="vol-category" 
+          formControlName="category"
+          class="form-input"
+        >
+          <option value="">Selecione uma categoria</option>
+          <option *ngFor="let cat of volunteerCategories" [value]="cat">{{ cat }}</option>
+        </select>
+        <span class="error-message" *ngIf="volunteerForm.get('category')?.invalid && volunteerForm.get('category')?.touched">
+          Selecione uma categoria
+        </span>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="vol-skills">Habilidades Desejadas (opcional)</label>
+      <input 
+        type="text" 
+        id="vol-skills" 
+        formControlName="skills"
+        placeholder="Ex: Comunicação, Trabalho em equipe, Paciência (separe por vírgula)"
+        class="form-input"
+      />
+      <small class="form-hint">Separe as habilidades por vírgula</small>
+    </div>
+
+    <div class="modal-actions">
+      <button type="button" class="btn-secondary" (click)="closeVolunteerModal()">Cancelar</button>
+      <button type="submit" class="btn-primary" [disabled]="volunteerForm.invalid">
+        {{ editingOpportunity ? 'Salvar Alterações' : 'Criar Oportunidade' }}
+      </button>
+    </div>
+  </form>
+</app-modal>
+
+<!-- Modal de Visualização de Inscritos -->
+<app-modal 
+  [isOpen]="isRegistrationsModalOpen" 
+  [title]="'Voluntários Inscritos - ' + selectedOpportunityTitle"
+  size="medium"
+  (close)="closeRegistrationsModal()">
+  
+  <div class="registrations-list" *ngIf="selectedOpportunityRegistrations.length > 0">
+    <div class="registration-item" *ngFor="let reg of selectedOpportunityRegistrations">
+      <div class="registration-header">
+        <div class="volunteer-avatar-large">{{ reg.volunteerName.charAt(0) }}</div>
+        <div class="volunteer-details">
+          <h4>{{ reg.volunteerName }}</h4>
+          <p>📧 {{ reg.volunteerEmail }}</p>
+          <p>📱 {{ reg.phone }}</p>
+        </div>
+        <span class="status-badge" [ngClass]="'status-' + reg.status">
+          {{ reg.status === 'confirmed' ? '✅ Confirmado' : reg.status === 'pending' ? '⏳ Pendente' : '❌ Cancelado' }}
+        </span>
+      </div>
+      
+      <div class="registration-message" *ngIf="reg.message">
+        <strong>Mensagem:</strong>
+        <p>{{ reg.message }}</p>
+      </div>
+
+      <div class="registration-footer">
+        <small>Inscrito em: {{ reg.registeredAt | date:'dd/MM/yyyy HH:mm' }}</small>
+        <button 
+          *ngIf="reg.status === 'pending'" 
+          class="btn-small btn-confirm"
+          (click)="confirmRegistration(reg.id)">
+          Confirmar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="empty-state" *ngIf="selectedOpportunityRegistrations.length === 0">
+    <p>📭 Ainda não há voluntários inscritos nesta oportunidade.</p>
+  </div>
+</app-modal>
+</div>

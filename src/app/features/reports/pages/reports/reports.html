@@ -1,0 +1,286 @@
+<div class="reports-container">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1>📊 Relatórios Automatizados</h1>
+      <p class="subtitle">Agende e gere relatórios personalizados</p>
+    </div>
+    <div class="header-actions">
+      <app-theme-language-toggle></app-theme-language-toggle>
+      <button class="btn-primary" (click)="openCreateModal()">
+        <span>➕</span> Novo Relatório
+      </button>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button 
+      class="tab" 
+      [class.active]="activeTab === 'scheduled'"
+      (click)="activeTab = 'scheduled'">
+      🗓️ Agendados
+      <span class="badge">{{ scheduledReports.length }}</span>
+    </button>
+    <button 
+      class="tab" 
+      [class.active]="activeTab === 'generated'"
+      (click)="activeTab = 'generated'">
+      📄 Gerados
+      <span class="badge">{{ generatedReports.length }}</span>
+    </button>
+  </div>
+
+  <!-- Scheduled Reports -->
+  <div class="content-area" *ngIf="activeTab === 'scheduled'">
+    <div class="reports-grid" *ngIf="scheduledReports.length > 0">
+      <div class="report-card" *ngFor="let report of scheduledReports">
+        <div class="report-header">
+          <div class="report-icon">{{ getReportTypeInfo(report.type).icon }}</div>
+          <div class="status-badge" [style.background]="getStatusColor(report.active)">
+            {{ getStatusLabel(report.active) }}
+          </div>
+        </div>
+        
+        <h3 class="report-name">{{ report.name }}</h3>
+        <p class="report-type">{{ getReportTypeInfo(report.type).label }}</p>
+        
+        <div class="report-details">
+          <div class="detail-row">
+            <span class="icon">🔄</span>
+            <div>
+              <span class="label">Tipo:</span>
+              <span class="value">{{ getFrequencyInfo(report.type).label }}</span>
+            </div>
+          </div>
+          
+          <div class="detail-row">
+            <span class="icon">📅</span>
+            <div>
+              <span class="label">Próxima execução:</span>
+              <span class="value">{{ getNextRunDate(report) }}</span>
+            </div>
+          </div>
+          
+          <div class="detail-row">
+            <span class="icon">📋</span>
+            <div>
+              <span class="label">Formato:</span>
+              <span class="value">{{ getFormatInfo(report.format).label }}</span>
+            </div>
+          </div>
+          
+          <div class="detail-row" *ngIf="report.recipients && report.recipients.length > 0">
+            <span class="icon">📧</span>
+            <div>
+              <span class="label">Destinatários:</span>
+              <span class="value">{{ report.recipients.length }} email(s)</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="report-actions">
+          <button class="btn-icon" (click)="generateNow(report)" title="Gerar agora">
+            ▶️
+          </button>
+          <button class="btn-icon" (click)="pauseReport(report)" title="Pausar/Ativar">
+            {{ report.active ? '⏸️' : '▶️' }}
+          </button>
+          <button class="btn-icon danger" (click)="deleteReport(report)" title="Excluir">
+            🗑️
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="empty-state" *ngIf="scheduledReports.length === 0">
+      <span class="empty-icon">🗓️</span>
+      <h3>Nenhum relatório agendado</h3>
+      <p>Crie relatórios automáticos para acompanhar métricas importantes</p>
+      <button class="btn-primary" (click)="openCreateModal()">
+        ➕ Criar Primeiro Relatório
+      </button>
+    </div>
+  </div>
+
+  <!-- Generated Reports -->
+  <div class="content-area" *ngIf="activeTab === 'generated'">
+    <div class="generated-list" *ngIf="generatedReports.length > 0">
+      <div class="generated-card" *ngFor="let report of generatedReports">
+        <div class="generated-header">
+          <div class="report-info">
+            <span class="report-icon">{{ getReportTypeInfo(report.type).icon }}</span>
+            <div>
+              <h3>{{ report.name }}</h3>
+              <p class="report-meta">
+                {{ getReportTypeInfo(report.type).label }} • 
+                {{ getFormatInfo(report.format).label }} •
+                {{ report.generatedAt | date: 'dd/MM/yyyy HH:mm' }}
+              </p>
+            </div>
+          </div>
+          
+          <div class="status-badge completed">
+            ✅ Gerado
+          </div>
+        </div>
+        
+        <div class="generated-details">
+          <div class="detail-item">
+            <span class="icon">📏</span>
+            <div>
+              <strong>Tamanho:</strong>
+              <p>{{ getFileSize(report.fileSize) }}</p>
+            </div>
+          </div>
+          
+          <div class="detail-item" *ngIf="report.recordsCount">
+            <span class="icon">📊</span>
+            <div>
+              <strong>Registros:</strong>
+              <p>{{ report.recordsCount }}</p>
+            </div>
+          </div>
+          
+          <div class="detail-item" *ngIf="report.sentAt">
+            <span class="icon">📧</span>
+            <div>
+              <strong>Enviado em:</strong>
+              <p>{{ report.sentAt | date: 'dd/MM/yyyy HH:mm' }}</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="generated-actions">
+          <button class="btn-download" (click)="downloadReport(report)">
+            📥 Download
+          </button>
+          <button class="btn-send" (click)="sendReport(report)">
+            📧 Enviar Email
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="empty-state" *ngIf="generatedReports.length === 0">
+      <span class="empty-icon">📄</span>
+      <h3>Nenhum relatório gerado</h3>
+      <p>Relatórios gerados aparecerão aqui</p>
+    </div>
+  </div>
+</div>
+
+<!-- Create Report Modal -->
+<div class="modal-overlay" *ngIf="showCreateModal" (click)="closeCreateModal()">
+  <div class="modal-content large" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>➕ Criar Novo Relatório</h2>
+      <button class="close-btn" (click)="closeCreateModal()">✕</button>
+    </div>
+    
+    <div class="modal-body">
+      <!-- Report Name -->
+      <div class="form-group">
+        <label>Nome do Relatório *</label>
+        <input 
+          type="text" 
+          [(ngModel)]="newReport.name" 
+          placeholder="Ex: Relatório Semanal de Doações"
+          class="form-input">
+      </div>
+      
+      <!-- Report Type -->
+      <div class="form-group">
+        <label>Tipo de Relatório *</label>
+        <div class="type-grid">
+          <div 
+            class="type-card" 
+            *ngFor="let type of reportTypes"
+            [class.selected]="newReport.type === type.value"
+            (click)="setReportType(type.value)">
+            <span class="type-icon">{{ type.icon }}</span>
+            <h4>{{ type.label }}</h4>
+            <p>{{ type.description }}</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Frequency and Format -->
+      <div class="form-row">
+        <div class="form-group">
+          <label>Tipo *</label>
+          <select [(ngModel)]="newReport.type" class="form-select">
+            <option *ngFor="let freq of frequencies" [value]="freq.value">
+              {{ freq.icon }} {{ freq.label }}
+            </option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label>Formato *</label>
+          <select [(ngModel)]="newReport.format" class="form-select">
+            <option *ngFor="let fmt of formats" [value]="fmt.value">
+              {{ fmt.icon }} {{ fmt.label }} - {{ fmt.description }}
+            </option>
+          </select>
+        </div>
+      </div>
+      
+      <!-- Sections to Include -->
+      <div class="form-group">
+        <label>Incluir nos Relatórios</label>
+        <div class="checkboxes">
+          <label class="checkbox-label">
+            <input type="checkbox" [(ngModel)]="newReport.includeMetrics">
+            <span>� Métricas Gerais</span>
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" [(ngModel)]="newReport.includeCampaigns">
+            <span>� Campanhas</span>
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" [(ngModel)]="newReport.includeVolunteers">
+            <span>🤝 Voluntários</span>
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" [(ngModel)]="newReport.includeDonations">
+            <span>� Doações</span>
+          </label>
+        </div>
+      </div>
+      
+      <!-- Recipients -->
+      <div class="form-group">
+        <label>Destinatários (Email)</label>
+        <div class="recipients-input">
+          <input 
+            type="email" 
+            [(ngModel)]="newRecipient" 
+            placeholder="email@exemplo.com"
+            class="form-input"
+            (keyup.enter)="addRecipient()">
+          <button class="btn-add" (click)="addRecipient()">➕</button>
+        </div>
+        
+        <div class="recipients-list" *ngIf="newReport.recipients && newReport.recipients.length > 0">
+          <div class="recipient-tag" *ngFor="let email of newReport.recipients">
+            <span>📧 {{ email }}</span>
+            <button class="remove-btn" (click)="removeRecipient(email)">✕</button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="info-box">
+        <span class="icon">💡</span>
+        <p>O relatório será gerado automaticamente na frequência selecionada e enviado para os destinatários.</p>
+      </div>
+    </div>
+    
+    <div class="modal-footer">
+      <button class="btn-secondary" (click)="closeCreateModal()">Cancelar</button>
+      <button class="btn-primary" (click)="scheduleReport()">
+        🗓️ Agendar Relatório
+      </button>
+    </div>
+  </div>
+</div>

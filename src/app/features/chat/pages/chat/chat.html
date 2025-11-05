@@ -1,0 +1,108 @@
+<div class="chat-container">
+  <!-- Sidebar com lista de conversas -->
+  <div class="conversations-sidebar">
+    <div class="sidebar-header">
+      <h2>💬 Mensagens</h2>
+      <app-theme-language-toggle></app-theme-language-toggle>
+    </div>
+
+    <div class="conversations-list">
+      <div 
+        *ngFor="let conversation of conversations"
+        class="conversation-item"
+        [class.active]="selectedConversation?.id === conversation.id"
+        [class.unread]="conversation.unreadCount > 0"
+        (click)="selectConversation(conversation)"
+      >
+        <div class="avatar">
+          {{ getInitial(getOtherParticipantName(conversation)) }}
+        </div>
+        
+        <div class="conversation-info">
+          <div class="conversation-header">
+            <h3 class="conversation-name">{{ getOtherParticipantName(conversation) }}</h3>
+            <span class="conversation-time" *ngIf="conversation.lastMessage">
+              {{ formatTime(conversation.lastMessage.timestamp) }}
+            </span>
+          </div>
+          
+          <div class="conversation-preview">
+            <p class="last-message" [class.unread-text]="conversation.unreadCount > 0">
+              {{ conversation.lastMessage?.content || 'Sem mensagens' }}
+            </p>
+            <span class="unread-count" *ngIf="conversation.unreadCount > 0">
+              {{ conversation.unreadCount }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="empty-state" *ngIf="conversations.length === 0">
+        <p>Você ainda não tem conversas</p>
+        <small>Inicie uma conversa a partir de uma campanha ou oportunidade de voluntariado</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Área de mensagens -->
+  <div class="messages-area">
+    <div class="messages-empty" *ngIf="!selectedConversation">
+      <div class="empty-illustration">💬</div>
+      <h3>Selecione uma conversa</h3>
+      <p>Escolha uma conversa na lista ao lado para começar a trocar mensagens</p>
+    </div>
+
+    <div class="messages-content" *ngIf="selectedConversation">
+      <div class="messages-header">
+        <div class="header-info">
+          <div class="avatar">
+            {{ getInitial(getOtherParticipantName(selectedConversation)) }}
+          </div>
+          <div>
+            <h3>{{ getOtherParticipantName(selectedConversation) }}</h3>
+          </div>
+        </div>
+      </div>
+
+      <div class="messages-container" #messagesContainer>
+        <div class="messages-list">
+          <div 
+            *ngFor="let msg of messages"
+            class="message"
+            [class.my-message]="isMyMessage(msg)"
+            [class.other-message]="!isMyMessage(msg)"
+          >
+            <div class="message-bubble">
+              <p class="message-content">{{ msg.content }}</p>
+              <span class="message-time">{{ formatMessageTime(msg.timestamp) }}</span>
+            </div>
+          </div>
+
+          <div class="empty-messages" *ngIf="messages.length === 0">
+            <p>Nenhuma mensagem ainda. Seja o primeiro a escrever!</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="message-input-area">
+        <form (submit)="sendMessage(); $event.preventDefault()" class="message-form">
+          <input 
+            type="text" 
+            [(ngModel)]="newMessage"
+            name="message"
+            placeholder="Digite sua mensagem..."
+            class="message-input"
+            autocomplete="off"
+          />
+          <button 
+            type="submit" 
+            class="send-button"
+            [disabled]="!newMessage.trim()"
+          >
+            Enviar
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

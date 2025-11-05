@@ -1,0 +1,86 @@
+<div class="main-layout">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h2>🌟 SOMAR</h2>
+      <p class="user-info">{{ currentUserName }}</p>
+      <span class="user-type-badge" [ngClass]="userType">{{ userType === 'ong' ? 'ONG' : 'Doador' }}</span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <!-- Dashboard -->
+      <a [routerLink]="getDashboardRoute()" routerLinkActive="active" class="nav-item">
+        <span>📊</span>
+        Dashboard
+      </a>
+
+      <!-- Visão Geral / Overview -->
+      <a routerLink="/overview" routerLinkActive="active" class="nav-item">
+        <span>👁️</span>
+        Visão Geral
+      </a>
+
+      <!-- Campanhas -->
+      <a routerLink="/campanhas" routerLinkActive="active" class="nav-item">
+        <span>📢</span>
+        Campanhas
+      </a>
+
+      <!-- Voluntários -->
+      <a routerLink="/voluntarios" routerLinkActive="active" class="nav-item">
+        <span>🤝</span>
+        Voluntários
+      </a>
+
+      <!-- Doações -->
+      <a routerLink="/doacoes" routerLinkActive="active" class="nav-item">
+        <span>💝</span>
+        Doações
+      </a>
+
+      <!-- Marketplace -->
+      <a routerLink="/marketplace" routerLinkActive="active" class="nav-item">
+        <span>🛒</span>
+        Marketplace
+      </a>
+
+      <!-- Analytics -->
+      <a routerLink="/analytics" routerLinkActive="active" class="nav-item">
+        <span>📈</span>
+        Analytics
+      </a>
+
+      <!-- Relatórios -->
+      <a routerLink="/reports" routerLinkActive="active" class="nav-item">
+        <span>📋</span>
+        Relatórios
+      </a>
+
+      <!-- Chat -->
+      <a routerLink="/chat" routerLinkActive="active" class="nav-item chat-link">
+        <span>💬</span>
+        Mensagens
+        <span class="unread-badge" *ngIf="unreadMessagesCount > 0">{{ unreadMessagesCount }}</span>
+      </a>
+
+      <!-- Configurações -->
+      <a routerLink="/configuracoes" routerLinkActive="active" class="nav-item">
+        <span>⚙️</span>
+        Configurações
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <app-theme-language-toggle></app-theme-language-toggle>
+      <button class="btn-logout" (click)="logout()">
+        <span>🚪</span>
+        Sair
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Content Area -->
+  <main class="content">
+    <router-outlet></router-outlet>
+  </main>
+</div>

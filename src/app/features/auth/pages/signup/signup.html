@@ -1,0 +1,50 @@
+<app-default-login-layout
+    title="Junte-se à Somar"
+    primaryBtnText="Criar conta"
+    secundaryBtnText="Já tenho conta"
+    (submit)="submit()"
+    (navigate)="navigate()"
+    [disablePrimaryBtn]="!signupForm.valid"
+>
+    <form [formGroup]="signupForm">
+        <app-user-type-selector
+            formControlName="userType"
+            label="Como você quer participar?"
+        ></app-user-type-selector>
+        
+        <app-primary-input
+            formControlName="name"
+            inputName="name"
+            type="text"
+            label="Nome completo"
+            placeholder="Seu nome"
+        >
+            <img src="svg/login.svg"/>
+        </app-primary-input>
+        <app-primary-input
+            formControlName="email"
+            inputName="email"
+            type="email"
+            label="E-mail"
+            placeholder="seu@email.com"
+        >
+            <img src="svg/login.svg"/>
+        </app-primary-input>
+        <app-primary-input
+            formControlName="password"
+            inputName="password"
+            type="password"
+            label="Senha"
+        >
+        <img src="svg/password.svg"/>
+    </app-primary-input>
+    <app-primary-input
+        formControlName="passwordConfirm"
+        inputName="passwordConfirm"
+        type="password"
+        label="Confirme sua senha"
+    >
+        <img src="svg/password.svg"/>
+    </app-primary-input>
+    </form>
+</app-default-login-layout>

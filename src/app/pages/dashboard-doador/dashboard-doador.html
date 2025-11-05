@@ -1,0 +1,393 @@
+<div class="dashboard-content">
+  <!-- Header -->
+  <header class="dashboard-header">
+    <div>
+      <h1>Olá! Pronto para fazer a diferença? 👋</h1>
+      <p>Explore campanhas e oportunidades de voluntariado</p>
+    </div>
+    <app-theme-language-toggle></app-theme-language-toggle>
+  </header>
+
+  <!-- Gamification Section -->
+  <section class="gamification-section" *ngIf="userGamification">
+    <div class="gamification-header">
+        <div class="level-badge">
+          <span class="level-icon">🏆</span>
+          <div class="level-info">
+            <span class="level-label">Nível</span>
+            <span class="level-number">{{ userGamification.level }}</span>
+          </div>
+        </div>
+        <div class="points-info">
+          <span class="points-label">Pontos Totais</span>
+          <span class="points-value">{{ userGamification.points }}</span>
+        </div>
+        <div class="streak-info">
+          <span class="streak-icon">🔥</span>
+          <span class="streak-text">{{ userGamification.streakDays }} dias consecutivos</span>
+        </div>
+      </div>
+      
+      <div class="level-progress">
+        <div class="progress-bar-gamification">
+          <div class="progress-fill-gamification" [style.width.%]="getLevelProgress()"></div>
+        </div>
+        <span class="progress-text">{{ getPointsToNextLevel() }} pontos para o próximo nível</span>
+      </div>
+
+      <div class="badges-showcase">
+        <h3>🎖️ Conquistas Desbloqueadas ({{ getUnlockedBadgesCount() }}/{{ getTotalBadgesCount() }})</h3>
+        <div class="badges-grid">
+          <div class="badge-item" 
+               *ngFor="let item of userBadgesDisplay" 
+               [class.unlocked]="item.achievement"
+               [class.locked]="!item.achievement"
+               [title]="item.badge.description">
+            <span class="badge-icon">{{ item.badge.icon }}</span>
+            <span class="badge-name">{{ item.badge.name }}</span>
+            <span class="badge-type" [class]="'badge-' + item.badge.type">{{ item.badge.type }}</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Impact Stats -->
+    <section class="impact-stats">
+      <div class="impact-card">
+        <div class="impact-icon">💝</div>
+        <div class="impact-info">
+          <h3>Doações Realizadas</h3>
+          <p class="impact-value">{{ myContributions.donations }}</p>
+        </div>
+      </div>
+      <div class="impact-card">
+        <div class="impact-icon">⏱️</div>
+        <div class="impact-info">
+          <h3>Horas de Voluntariado</h3>
+          <p class="impact-value">{{ myContributions.volunteerHours }}h</p>
+        </div>
+      </div>
+      <div class="impact-card">
+        <div class="impact-icon">❤️</div>
+        <div class="impact-info">
+          <h3>Pessoas Impactadas</h3>
+          <p class="impact-value">{{ myContributions.impactedPeople }}+</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Featured Campaigns -->
+    <section class="section">
+      <div class="section-header">
+        <h2>Campanhas Disponíveis</h2>
+      </div>
+
+      <!-- Filtros -->
+      <div class="filters-container">
+        <div class="filter-group">
+          <label>🔍 Buscar</label>
+          <input 
+            type="text" 
+            [(ngModel)]="searchQuery"
+            (input)="applyFilters()"
+            placeholder="Pesquisar campanhas..."
+            class="filter-input"
+          />
+        </div>
+
+        <div class="filter-group">
+          <label>📂 Categoria</label>
+          <select 
+            [(ngModel)]="selectedCategory"
+            (change)="applyFilters()"
+            class="filter-select"
+          >
+            <option value="">Todas</option>
+            <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label>⚡ Urgência</label>
+          <select 
+            [(ngModel)]="selectedUrgency"
+            (change)="applyFilters()"
+            class="filter-select"
+          >
+            <option value="">Todas</option>
+            <option value="high">Urgente</option>
+            <option value="medium">Importante</option>
+            <option value="low">Normal</option>
+          </select>
+        </div>
+
+        <button class="btn-clear-filters" (click)="clearFilters()">Limpar Filtros</button>
+      </div>
+
+      <p class="results-count">{{ filteredCampaigns.length }} campanha(s) encontrada(s)</p>
+
+      <div class="campaigns-grid">
+        <div class="campaign-card" *ngFor="let campaign of filteredCampaigns">
+          <div class="campaign-badge" [style.background-color]="getUrgencyColor(campaign.urgency)">
+            {{ campaign.urgency === 'high' ? 'Urgente' : campaign.urgency === 'medium' ? 'Importante' : 'Normal' }}
+          </div>
+          <div class="campaign-ong">{{ campaign.ongName }}</div>
+          <h3>{{ campaign.title }}</h3>
+          <p class="campaign-description">{{ campaign.description }}</p>
+          
+          <!-- Rating Section -->
+          <div class="campaign-rating">
+            <div class="rating-stars">
+              <span class="star" *ngFor="let star of [1,2,3,4,5]" 
+                    [class.filled]="star <= getCampaignRating(campaign.id)">
+                ⭐
+              </span>
+            </div>
+            <span class="rating-text">
+              {{ getCampaignRating(campaign.id) | number:'1.1-1' }} 
+              ({{ getCampaignReviewCount(campaign.id) }} avaliações)
+            </span>
+          </div>
+
+          <div class="campaign-meta">
+            <span class="meta-item">📍 {{ campaign.location }}</span>
+            <span class="meta-item">🏷️ {{ campaign.category }}</span>
+          </div>
+          <div class="campaign-progress">
+            <div class="progress-bar">
+              <div class="progress-fill" [style.width.%]="getProgress(campaign)"></div>
+            </div>
+            <div class="progress-info">
+              <span>{{ campaign.current }} / {{ campaign.goal }} itens</span>
+              <span class="progress-percent">{{ getProgress(campaign) | number:'1.0-0' }}%</span>
+            </div>
+          </div>
+          <div class="campaign-actions">
+            <button class="btn-details" (click)="openDetailsModal(campaign)">📋 Ver Detalhes</button>
+            <button class="btn-donate" (click)="openDonationModal(campaign)">💝 Quero Doar</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Volunteer Opportunities -->
+    <section class="section">
+      <div class="section-header">
+        <h2>Oportunidades de Voluntariado</h2>
+      </div>
+      <div class="opportunities-list">
+        <div class="opportunity-card" *ngFor="let opp of volunteerOpportunities; let i = index">
+          <div class="opp-icon">🌟</div>
+          <div class="opp-content">
+            <h3>{{ opp.title }}</h3>
+            <div class="opp-details">
+              <span class="opp-detail">🏢 {{ opp.ongName }}</span>
+              <span class="opp-detail">📅 {{ opp.date | date:'dd/MM' }}</span>
+              <span class="opp-detail">⏰ {{ opp.time }}</span>
+              <span class="opp-detail">📍 {{ opp.location }}</span>
+              <span class="opp-detail">👥 {{ getAvailableSpots(opp) }} vagas</span>
+            </div>
+          </div>
+          <button class="btn-volunteer" (click)="volunteer(i)">Quero Participar</button>
+        </div>
+      </div>
+    </section>
+
+<!-- Modal de Doação -->
+<app-modal 
+  [isOpen]="isDonationModalOpen" 
+  [title]="'Fazer Doação - ' + (selectedCampaign?.title || '')"
+  size="medium"
+  (close)="closeDonationModal()">
+  
+  <div class="donation-info" *ngIf="selectedCampaign">
+    <p><strong>ONG:</strong> {{ selectedCampaign.ongName }}</p>
+    <p><strong>Categoria:</strong> {{ selectedCampaign.category }}</p>
+    <p><strong>Localização:</strong> {{ selectedCampaign.location }}</p>
+  </div>
+
+  <form [formGroup]="donationForm" (ngSubmit)="submitDonation()">
+    <div class="form-group">
+      <label for="itemDescription">O que você vai doar? *</label>
+      <input 
+        type="text" 
+        id="itemDescription" 
+        formControlName="itemDescription"
+        placeholder="Ex: Roupas de inverno, Alimentos, Livros..."
+        class="form-input"
+      />
+      <span class="error-message" *ngIf="donationForm.get('itemDescription')?.invalid && donationForm.get('itemDescription')?.touched">
+        Descrição do item é obrigatória
+      </span>
+    </div>
+
+    <div class="form-group">
+      <label for="quantity">Quantidade *</label>
+      <input 
+        type="number" 
+        id="quantity" 
+        formControlName="quantity"
+        min="1"
+        class="form-input"
+      />
+      <span class="error-message" *ngIf="donationForm.get('quantity')?.invalid && donationForm.get('quantity')?.touched">
+        Quantidade deve ser maior que 0
+      </span>
+    </div>
+
+    <div class="form-group">
+      <label for="deliveryType">Tipo de Entrega *</label>
+      <select 
+        id="deliveryType" 
+        formControlName="deliveryType"
+        class="form-input"
+      >
+        <option value="retirada">🚗 A ONG retirará no meu endereço</option>
+        <option value="entrega">📦 Eu entregarei no endereço da ONG</option>
+      </select>
+      <span class="error-message" *ngIf="donationForm.get('deliveryType')?.invalid && donationForm.get('deliveryType')?.touched">
+        Selecione o tipo de entrega
+      </span>
+    </div>
+
+    <div class="form-group">
+      <label for="donorName">Seu Nome *</label>
+      <input 
+        type="text" 
+        id="donorName" 
+        formControlName="donorName"
+        placeholder="Seu nome completo"
+        class="form-input"
+      />
+      <span class="error-message" *ngIf="donationForm.get('donorName')?.invalid && donationForm.get('donorName')?.touched">
+        Nome é obrigatório
+      </span>
+    </div>
+
+    <div class="form-group">
+      <label for="phone">Telefone para Contato *</label>
+      <input 
+        type="tel" 
+        id="phone" 
+        formControlName="phone"
+        placeholder="(11) 99999-9999"
+        class="form-input"
+      />
+      <span class="error-message" *ngIf="donationForm.get('phone')?.invalid && donationForm.get('phone')?.touched">
+        Telefone é obrigatório
+      </span>
+    </div>
+
+    <div class="form-group">
+      <label for="address">{{ donationForm.get('deliveryType')?.value === 'entrega' ? 'Seu Endereço para Referência' : 'Endereço para Coleta' }} *</label>
+      <textarea 
+        id="address" 
+        formControlName="address"
+        rows="2"
+        [placeholder]="donationForm.get('deliveryType')?.value === 'entrega' ? 'Seu endereço (opcional para contato)' : 'Rua, número, bairro, cidade'"
+        class="form-input"
+      ></textarea>
+      <span class="error-message" *ngIf="donationForm.get('address')?.invalid && donationForm.get('address')?.touched">
+        Endereço é obrigatório
+      </span>
+    </div>
+
+    <div class="form-group">
+      <label for="notes">Observações (opcional)</label>
+      <textarea 
+        id="notes" 
+        formControlName="notes"
+        rows="2"
+        placeholder="Informações adicionais sobre a doação..."
+        class="form-input"
+      ></textarea>
+    </div>
+
+    <div class="modal-actions">
+      <button type="button" class="btn-secondary" (click)="closeDonationModal()">Cancelar</button>
+      <button type="submit" class="btn-primary" [disabled]="donationForm.invalid">
+        Confirmar Doação
+      </button>
+    </div>
+  </form>
+</app-modal>
+
+<!-- Modal de Inscrição em Voluntariado -->
+<app-modal 
+  [isOpen]="isVolunteerRegistrationModalOpen" 
+  [title]="'Inscrever-se como Voluntário - ' + (selectedOpportunity?.title || '')"
+  size="medium"
+  (close)="closeVolunteerRegistrationModal()">
+  
+  <div class="volunteer-info" *ngIf="selectedOpportunity">
+    <h4>Detalhes da Oportunidade:</h4>
+    <p><strong>ONG:</strong> {{ selectedOpportunity.ongName }}</p>
+    <p><strong>Data:</strong> {{ selectedOpportunity.date | date:'dd/MM/yyyy' }}</p>
+    <p><strong>Horário:</strong> {{ selectedOpportunity.time }}</p>
+    <p><strong>Local:</strong> {{ selectedOpportunity.location }}</p>
+    <p><strong>Vagas Disponíveis:</strong> {{ getAvailableSpots(selectedOpportunity) }}</p>
+    
+    <div class="skills-required" *ngIf="selectedOpportunity.skills && selectedOpportunity.skills.length > 0">
+      <strong>Habilidades Desejadas:</strong>
+      <div class="skills-tags">
+        <span class="skill-tag" *ngFor="let skill of selectedOpportunity.skills">{{ skill }}</span>
+      </div>
+    </div>
+  </div>
+
+  <form [formGroup]="volunteerRegistrationForm" (ngSubmit)="submitVolunteerRegistration()">
+    <div class="form-group">
+      <label for="vol-name">Seu Nome Completo *</label>
+      <input 
+        type="text" 
+        id="vol-name" 
+        formControlName="name"
+        placeholder="Nome completo"
+        class="form-input"
+      />
+      <span class="error-message" *ngIf="volunteerRegistrationForm.get('name')?.invalid && volunteerRegistrationForm.get('name')?.touched">
+        Nome é obrigatório
+      </span>
+    </div>
+
+    <div class="form-group">
+      <label for="vol-phone">Telefone para Contato *</label>
+      <input 
+        type="tel" 
+        id="vol-phone" 
+        formControlName="phone"
+        placeholder="(11) 99999-9999"
+        class="form-input"
+      />
+      <span class="error-message" *ngIf="volunteerRegistrationForm.get('phone')?.invalid && volunteerRegistrationForm.get('phone')?.touched">
+        Telefone é obrigatório
+      </span>
+    </div>
+
+    <div class="form-group">
+      <label for="vol-message">Mensagem (opcional)</label>
+      <textarea 
+        id="vol-message" 
+        formControlName="message"
+        rows="3"
+        placeholder="Conte um pouco sobre sua motivação para participar ou experiências relevantes..."
+        class="form-input"
+      ></textarea>
+    </div>
+
+    <div class="modal-actions">
+      <button type="button" class="btn-secondary" (click)="closeVolunteerRegistrationModal()">Cancelar</button>
+      <button type="submit" class="btn-primary" [disabled]="volunteerRegistrationForm.invalid">
+        Confirmar Inscrição
+      </button>
+    </div>
+  </form>
+</app-modal>
+
+<!-- Modal de Detalhes da Campanha -->
+<app-campaign-details-modal
+  [campaign]="selectedCampaign"
+  [isOpen]="isDetailsModalOpen"
+  (close)="closeDetailsModal()"
+></app-campaign-details-modal>
+</div>

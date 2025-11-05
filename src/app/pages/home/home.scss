@@ -1,0 +1,336 @@
+@import "../../../styles/variables.scss";
+
+.home-container {
+  width: 100%;
+  min-height: 100vh;
+
+  // Navbar
+  .navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 80px;
+    background-color: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 24px;
+      font-weight: 700;
+      color: $text-color;
+
+      img {
+        width: 40px;
+        height: 40px;
+      }
+    }
+
+    .nav-actions {
+      display: flex;
+      gap: 16px;
+    }
+  }
+
+  // Hero Section
+  .hero {
+    background: linear-gradient(135deg, $secundary-color 0%, $primary-color 100%);
+    color: white;
+    padding-bottom: 100px;
+
+    .hero-content {
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+      padding: 80px 20px;
+
+      h1 {
+        font-size: 56px;
+        font-weight: 800;
+        margin-bottom: 24px;
+        line-height: 1.2;
+      }
+
+      .hero-subtitle {
+        font-size: 20px;
+        line-height: 1.6;
+        margin-bottom: 48px;
+        opacity: 0.95;
+      }
+
+      .hero-actions {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+    }
+  }
+
+  // Features Section
+  .features {
+    padding: 100px 80px;
+    background-color: white;
+
+    h2 {
+      text-align: center;
+      font-size: 40px;
+      font-weight: 700;
+      color: $text-color;
+      margin-bottom: 60px;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 40px;
+      max-width: 1200px;
+      margin: 0 auto;
+
+      .feature-card {
+        text-align: center;
+        padding: 32px;
+        border-radius: 16px;
+        transition: all 0.3s ease;
+
+        &:hover {
+          transform: translateY(-8px);
+          box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-icon {
+          font-size: 64px;
+          margin-bottom: 20px;
+        }
+
+        h3 {
+          font-size: 22px;
+          font-weight: 600;
+          color: $text-color;
+          margin-bottom: 12px;
+        }
+
+        p {
+          font-size: 15px;
+          line-height: 1.6;
+          color: rgba($text-color, 0.8);
+        }
+      }
+    }
+  }
+
+  // How It Works Section
+  .how-it-works {
+    padding: 100px 80px;
+    background-color: $bg-color;
+
+    h2 {
+      text-align: center;
+      font-size: 40px;
+      font-weight: 700;
+      color: $text-color;
+      margin-bottom: 60px;
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 32px;
+      max-width: 1200px;
+      margin: 0 auto;
+
+      .step {
+        text-align: center;
+        padding: 32px;
+
+        .step-number {
+          width: 60px;
+          height: 60px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, $primary-color, $secundary-color);
+          color: white;
+          font-size: 28px;
+          font-weight: 700;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin: 0 auto 20px;
+        }
+
+        h3 {
+          font-size: 20px;
+          font-weight: 600;
+          color: $text-color;
+          margin-bottom: 12px;
+        }
+
+        p {
+          font-size: 15px;
+          line-height: 1.6;
+          color: rgba($text-color, 0.8);
+        }
+      }
+    }
+  }
+
+  // CTA Section
+  .cta {
+    padding: 100px 80px;
+    background: linear-gradient(135deg, $primary-color 0%, $secundary-color 100%);
+    text-align: center;
+    color: white;
+
+    h2 {
+      font-size: 40px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    p {
+      font-size: 18px;
+      margin-bottom: 40px;
+      opacity: 0.95;
+    }
+  }
+
+  // Footer
+  .footer {
+    padding: 40px 80px;
+    background-color: $text-color;
+    color: white;
+
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      text-align: center;
+
+      .footer-logo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 16px;
+
+        img {
+          width: 36px;
+          height: 36px;
+          filter: brightness(0) invert(1);
+        }
+      }
+
+      p {
+        opacity: 0.8;
+        font-size: 14px;
+      }
+    }
+  }
+
+  // Buttons
+  .btn-text {
+    background: transparent;
+    border: none;
+    color: $text-color;
+    font-size: 16px;
+    font-weight: 500;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover {
+      color: $primary-color;
+    }
+  }
+
+  .btn-primary {
+    background-color: $primary-color;
+    color: white;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba($primary-color, 0.3);
+
+    &:hover {
+      background-color: darken($primary-color, 5%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba($primary-color, 0.4);
+    }
+  }
+
+  .btn-secondary {
+    background-color: transparent;
+    color: white;
+    border: 2px solid white;
+    padding: 12px 28px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background-color: white;
+      color: $primary-color;
+      transform: translateY(-2px);
+    }
+  }
+
+  .btn-large {
+    padding: 16px 40px;
+    font-size: 18px;
+  }
+
+  // Responsive
+  @media (max-width: 768px) {
+    .navbar {
+      padding: 16px 20px;
+
+      .logo {
+        font-size: 20px;
+
+        img {
+          width: 32px;
+          height: 32px;
+        }
+      }
+    }
+
+    .hero .hero-content {
+      padding: 60px 20px;
+
+      h1 {
+        font-size: 36px;
+      }
+
+      .hero-subtitle {
+        font-size: 16px;
+      }
+
+      .hero-actions {
+        flex-direction: column;
+      }
+    }
+
+    .features,
+    .how-it-works,
+    .cta,
+    .footer {
+      padding: 60px 20px;
+    }
+
+    .features h2,
+    .how-it-works h2,
+    .cta h2 {
+      font-size: 32px;
+    }
+  }
+}

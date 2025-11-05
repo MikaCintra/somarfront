@@ -1,6 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
 
 @import 'ngx-toastr/toastr';
+@import './styles/variables.scss';
 
 * {
     margin: 0;
@@ -12,4 +13,107 @@
 html,
 body {
     height: 100%;
+    background-color: white;
+    color: $text-color;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+// Dark Mode
+.dark-theme {
+    background-color: #1a1a1a;
+    color: #e0e0e0;
+
+    // Override principais
+    .sidebar {
+        background-color: #2d2d2d !important;
+        border-color: rgba(255, 255, 255, 0.1) !important;
+
+        h2, .nav-item {
+            color: #e0e0e0 !important;
+        }
+
+        .nav-item:hover {
+            background-color: rgba(255, 255, 255, 0.05) !important;
+        }
+
+        .nav-item.active {
+            background-color: rgba(46, 204, 113, 0.2) !important;
+        }
+    }
+
+    .main-content {
+        background-color: #1a1a1a !important;
+    }
+
+    .dashboard-header h1,
+    .dashboard-header p,
+    h1, h2, h3, h4, h5, h6, p {
+        color: #e0e0e0 !important;
+    }
+
+    .stat-card,
+    .campaign-card,
+    .volunteer-card,
+    .impact-card,
+    .opportunity-card,
+    .modal-content {
+        background-color: #2d2d2d !important;
+        color: #e0e0e0 !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    input, textarea, select {
+        background-color: #3d3d3d !important;
+        color: #e0e0e0 !important;
+        border-color: rgba(255, 255, 255, 0.1) !important;
+    }
+
+    .modal-backdrop {
+        background-color: rgba(0, 0, 0, 0.85) !important;
+    }
+}
+
+// Estilo para os inputs do formulário
+input {
+    font-family: "Poppins", sans-serif;
+    
+    &:focus {
+        outline: none;
+        border-color: $primary-color !important;
+    }
+}
+
+// Link "Esqueceu a senha?"
+span {
+    color: $text-color;
+    
+    &:hover {
+        color: $primary-color;
+        cursor: pointer;
+    }
+}
+
+// Global header styles para theme toggle
+.page-header,
+.overview-header,
+.analytics-header,
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+
+    .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+}
+
+.conversations-sidebar .sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
 }

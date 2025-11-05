@@ -1,0 +1,176 @@
+@import "../../../styles/variables.scss";
+
+main {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    width: 100%;
+
+    img{
+        size: 100;
+    }
+
+    .main-section {
+        flex-grow: 1;
+        background: linear-gradient(135deg, $secundary-color 0%, $primary-color 100%);
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        padding: 60px;
+
+        .content-wrapper {
+            max-width: 600px;
+            text-align: center;
+
+            h1 {
+                font-size: 64px;
+                font-weight: 800;
+                margin-bottom: 16px;
+                letter-spacing: 2px;
+            }
+
+            .tagline {
+                font-size: 24px;
+                font-weight: 300;
+                margin-bottom: 32px;
+                opacity: 0.95;
+            }
+
+            .description {
+                font-size: 18px;
+                line-height: 1.6;
+                margin-bottom: 48px;
+                opacity: 0.9;
+            }
+
+            .features {
+                display: flex;
+                gap: 40px;
+                justify-content: center;
+                flex-wrap: wrap;
+
+                .feature {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    gap: 12px;
+
+                    span {
+                        font-size: 48px;
+                    }
+
+                    p {
+                        font-size: 14px;
+                        font-weight: 500;
+                        opacity: 0.95;
+                    }
+                }
+            }
+        }
+    }
+
+    .form-section {
+        flex-grow: 0;
+        min-width: 450px;
+        padding: 60px 50px;
+        gap: 34px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+        img{
+            margin-bottom: 30px;
+            max-width: 80px;
+        }
+
+        h2 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 40px;
+            color: $text-color;
+        }
+
+        .btn-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            gap: 24px;
+            margin-top: 16px;
+
+            .divider{
+                display: flex;
+                width: 100%;
+                font-size: 12px;
+                height: 2px;
+                align-items: center;
+                justify-content: center;
+                gap: 20px;
+                text-transform: uppercase;
+
+                color: $text-color;
+                font-weight: 400;
+                opacity: 0.6;
+
+                div{
+                    flex-grow: 1;
+                    height: 1px;
+                    background-color: $gray-secundary-bg;
+                }
+            }
+        }
+
+        button {
+            width: 100%;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            background: transparent;
+            padding: 14px 28px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+
+            &:hover:not(:disabled) {
+                transform: translateY(-2px);
+            }
+
+            &:disabled{
+                opacity: 0.6;
+                cursor: not-allowed;
+            }
+
+            &.btn-primary {
+                background-color: $primary-color;
+                color: white;
+                box-shadow: 0px 8px 16px rgba(46, 204, 113, 0.3);
+
+                &:hover:not(:disabled) {
+                    background-color: darken($primary-color, 5%);
+                    box-shadow: 0px 12px 24px rgba(46, 204, 113, 0.4);
+                }
+            }
+
+            &.btn-secundary {
+                border: 2px solid $primary-color;
+                color: $primary-color;
+
+                &:hover:not(:disabled) {
+                    background-color: rgba($primary-color, 0.05);
+                }
+            }
+        }
+    }
+
+    @media (max-width: 968px) {
+        .main-section {
+            display: none;
+        }
+    }
+}

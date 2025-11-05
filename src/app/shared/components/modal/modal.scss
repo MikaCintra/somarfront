@@ -1,0 +1,117 @@
+@import "../../../../styles/variables.scss";
+
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-container {
+  background-color: white;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: slideUp 0.3s ease;
+
+  &.modal-small {
+    width: 90%;
+    max-width: 400px;
+  }
+
+  &.modal-medium {
+    width: 90%;
+    max-width: 600px;
+  }
+
+  &.modal-large {
+    width: 90%;
+    max-width: 900px;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px;
+  border-bottom: 1px solid $gray-secundary-bg;
+
+  h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: $text-color;
+    margin: 0;
+  }
+
+  .btn-close {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background-color: $gray-secundary-bg;
+    color: $text-color;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      background-color: rgba(red, 0.1);
+      color: red;
+    }
+  }
+}
+
+.modal-body {
+  padding: 24px;
+}
+
+// Scrollbar personalizada
+.modal-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.modal-container::-webkit-scrollbar-track {
+  background: $bg-color;
+}
+
+.modal-container::-webkit-scrollbar-thumb {
+  background: $gray-secundary-bg;
+  border-radius: 4px;
+
+  &:hover {
+    background: darken($gray-secundary-bg, 10%);
+  }
+}

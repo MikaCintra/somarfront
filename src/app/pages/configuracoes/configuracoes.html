@@ -1,0 +1,432 @@
+<div class="configuracoes-container">
+  <header class="page-header">
+    <div>
+      <h1>⚙️ Configurações</h1>
+      <p>Gerencie suas preferências, dados da conta e notificações</p>
+    </div>
+    <div class="header-actions">
+      <app-theme-language-toggle></app-theme-language-toggle>
+      <div class="user-type-badge">
+        <span class="badge-{{ userType }}">{{ getUserTypeLabel() }}</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mensagens de Feedback -->
+  <div class="message success" *ngIf="successMessage">
+    ✅ {{ successMessage }}
+  </div>
+  <div class="message error" *ngIf="errorMessage">
+    ❌ {{ errorMessage }}
+  </div>
+
+  <!-- Tabs de Navegação -->
+  <nav class="settings-tabs">
+    <button 
+      class="tab-button" 
+      [class.active]="activeTab === 'profile'"
+      (click)="setActiveTab('profile')">
+      <span class="tab-icon">👤</span>
+      <span>Perfil</span>
+    </button>
+    <button 
+      class="tab-button" 
+      [class.active]="activeTab === 'security'"
+      (click)="setActiveTab('security')">
+      <span class="tab-icon">🔒</span>
+      <span>Segurança</span>
+    </button>
+    <button 
+      class="tab-button" 
+      [class.active]="activeTab === 'notifications'"
+      (click)="setActiveTab('notifications')">
+      <span class="tab-icon">🔔</span>
+      <span>Notificações</span>
+    </button>
+    <button 
+      class="tab-button" 
+      [class.active]="activeTab === 'privacy'"
+      (click)="setActiveTab('privacy')">
+      <span class="tab-icon">🛡️</span>
+      <span>Privacidade</span>
+    </button>
+  </nav>
+
+  <!-- Conteúdo das Abas -->
+  <section class="settings-content">
+    
+    <!-- ABA: Perfil -->
+    <div class="tab-panel" *ngIf="activeTab === 'profile'">
+      <h2>📝 Informações do Perfil</h2>
+      <p class="section-description">Atualize suas informações pessoais e de contato</p>
+
+      <form class="settings-form" (ngSubmit)="saveProfile()">
+        <div class="form-group">
+          <label for="userName">Nome Completo *</label>
+          <input 
+            type="text" 
+            id="userName"
+            [(ngModel)]="userName"
+            name="userName"
+            placeholder="Seu nome completo"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="userEmail">E-mail</label>
+          <input 
+            type="email" 
+            id="userEmail"
+            [value]="userEmail"
+            disabled
+            class="disabled-input"
+          />
+          <small>O e-mail não pode ser alterado</small>
+        </div>
+
+        <div class="form-group">
+          <label for="userPhone">Telefone</label>
+          <input 
+            type="tel" 
+            id="userPhone"
+            [(ngModel)]="userPhone"
+            name="userPhone"
+            placeholder="(00) 00000-0000"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="userAddress">Endereço</label>
+          <input 
+            type="text" 
+            id="userAddress"
+            [(ngModel)]="userAddress"
+            name="userAddress"
+            placeholder="Rua, número, bairro, cidade - UF"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="userBio">Biografia / Sobre</label>
+          <textarea 
+            id="userBio"
+            [(ngModel)]="userBio"
+            name="userBio"
+            rows="4"
+            placeholder="Conte um pouco sobre você ou sua organização..."
+          ></textarea>
+          <small>{{ userBio.length }}/500 caracteres</small>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">
+            💾 Salvar Alterações
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- ABA: Segurança -->
+    <div class="tab-panel" *ngIf="activeTab === 'security'">
+      <h2>🔒 Segurança da Conta</h2>
+      <p class="section-description">Altere sua senha e gerencie a segurança da sua conta</p>
+
+      <form class="settings-form" (ngSubmit)="changePassword()">
+        <div class="form-group">
+          <label for="currentPassword">Senha Atual *</label>
+          <input 
+            type="password" 
+            id="currentPassword"
+            [(ngModel)]="currentPassword"
+            name="currentPassword"
+            placeholder="Digite sua senha atual"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="newPassword">Nova Senha *</label>
+          <input 
+            type="password" 
+            id="newPassword"
+            [(ngModel)]="newPassword"
+            name="newPassword"
+            placeholder="Digite a nova senha (mín. 6 caracteres)"
+            required
+            minlength="6"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="confirmPassword">Confirmar Nova Senha *</label>
+          <input 
+            type="password" 
+            id="confirmPassword"
+            [(ngModel)]="confirmPassword"
+            name="confirmPassword"
+            placeholder="Digite a nova senha novamente"
+            required
+          />
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">
+            🔑 Alterar Senha
+          </button>
+        </div>
+      </form>
+
+      <hr class="divider">
+
+      <div class="danger-zone">
+        <h3>⚠️ Zona de Perigo</h3>
+        <p>Ações irreversíveis relacionadas à sua conta</p>
+        <button type="button" class="btn btn-danger" (click)="deleteAccount()">
+          🗑️ Excluir Conta Permanentemente
+        </button>
+      </div>
+    </div>
+
+    <!-- ABA: Notificações -->
+    <div class="tab-panel" *ngIf="activeTab === 'notifications'">
+      <h2>🔔 Preferências de Notificação</h2>
+      <p class="section-description">Escolha como e quando deseja receber notificações</p>
+
+      <form class="settings-form" (ngSubmit)="saveNotifications()">
+        <div class="settings-section">
+          <h3>Canais de Notificação</h3>
+          
+          <div class="toggle-group">
+            <label class="toggle-label">
+              <input 
+                type="checkbox" 
+                [(ngModel)]="settings.emailNotifications"
+                name="emailNotifications"
+              />
+              <span class="toggle-switch"></span>
+              <div class="toggle-content">
+                <strong>📧 Notificações por E-mail</strong>
+                <small>Receba atualizações importantes por e-mail</small>
+              </div>
+            </label>
+          </div>
+
+          <div class="toggle-group">
+            <label class="toggle-label">
+              <input 
+                type="checkbox" 
+                [(ngModel)]="settings.pushNotifications"
+                name="pushNotifications"
+              />
+              <span class="toggle-switch"></span>
+              <div class="toggle-content">
+                <strong>🔔 Notificações Push</strong>
+                <small>Receba alertas no navegador</small>
+              </div>
+            </label>
+          </div>
+
+          <div class="toggle-group">
+            <label class="toggle-label">
+              <input 
+                type="checkbox" 
+                [(ngModel)]="settings.smsNotifications"
+                name="smsNotifications"
+              />
+              <span class="toggle-switch"></span>
+              <div class="toggle-content">
+                <strong>📱 Notificações por SMS</strong>
+                <small>Receba mensagens de texto para eventos importantes</small>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <hr class="divider">
+
+        <div class="settings-section">
+          <h3>Tipos de Notificação</h3>
+          
+          <div class="toggle-group">
+            <label class="toggle-label">
+              <input 
+                type="checkbox" 
+                [(ngModel)]="settings.campaignUpdates"
+                name="campaignUpdates"
+              />
+              <span class="toggle-switch"></span>
+              <div class="toggle-content">
+                <strong>📢 Atualizações de Campanhas</strong>
+                <small>Novidades sobre campanhas que você apoia ou criou</small>
+              </div>
+            </label>
+          </div>
+
+          <div class="toggle-group">
+            <label class="toggle-label">
+              <input 
+                type="checkbox" 
+                [(ngModel)]="settings.volunteerReminders"
+                name="volunteerReminders"
+              />
+              <span class="toggle-switch"></span>
+              <div class="toggle-content">
+                <strong>🤝 Lembretes de Voluntariado</strong>
+                <small>Lembretes sobre suas atividades voluntárias</small>
+              </div>
+            </label>
+          </div>
+
+          <div class="toggle-group">
+            <label class="toggle-label">
+              <input 
+                type="checkbox" 
+                [(ngModel)]="settings.donationReceipts"
+                name="donationReceipts"
+              />
+              <span class="toggle-switch"></span>
+              <div class="toggle-content">
+                <strong>💝 Comprovantes de Doação</strong>
+                <small>Reciba confirmações quando suas doações forem recebidas</small>
+              </div>
+            </label>
+          </div>
+
+          <div class="toggle-group">
+            <label class="toggle-label">
+              <input 
+                type="checkbox" 
+                [(ngModel)]="settings.monthlyReports"
+                name="monthlyReports"
+              />
+              <span class="toggle-switch"></span>
+              <div class="toggle-content">
+                <strong>📊 Relatórios Mensais</strong>
+                <small>Resumo mensal do seu impacto na plataforma</small>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">
+            💾 Salvar Preferências
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- ABA: Privacidade -->
+    <div class="tab-panel" *ngIf="activeTab === 'privacy'">
+      <h2>🛡️ Privacidade e Segurança</h2>
+      <p class="section-description">Controle quem pode ver suas informações e entrar em contato</p>
+
+      <form class="settings-form" (ngSubmit)="savePrivacy()">
+        <div class="settings-section">
+          <h3>Visibilidade do Perfil</h3>
+          
+          <div class="radio-group">
+            <label class="radio-label">
+              <input 
+                type="radio" 
+                [(ngModel)]="settings.profileVisibility"
+                name="profileVisibility"
+                value="public"
+              />
+              <div class="radio-content">
+                <strong>🌍 Público</strong>
+                <small>Qualquer pessoa pode ver seu perfil</small>
+              </div>
+            </label>
+
+            <label class="radio-label">
+              <input 
+                type="radio" 
+                [(ngModel)]="settings.profileVisibility"
+                name="profileVisibility"
+                value="ongs-only"
+              />
+              <div class="radio-content">
+                <strong>🏢 Apenas ONGs</strong>
+                <small>Somente organizações cadastradas podem ver seu perfil</small>
+              </div>
+            </label>
+
+            <label class="radio-label">
+              <input 
+                type="radio" 
+                [(ngModel)]="settings.profileVisibility"
+                name="profileVisibility"
+                value="private"
+              />
+              <div class="radio-content">
+                <strong>🔒 Privado</strong>
+                <small>Seu perfil não é visível para outros usuários</small>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <hr class="divider">
+
+        <div class="settings-section">
+          <h3>Informações de Contato</h3>
+          
+          <div class="toggle-group">
+            <label class="toggle-label">
+              <input 
+                type="checkbox" 
+                [(ngModel)]="settings.showEmail"
+                name="showEmail"
+              />
+              <span class="toggle-switch"></span>
+              <div class="toggle-content">
+                <strong>📧 Mostrar E-mail no Perfil</strong>
+                <small>Outras pessoas poderão ver seu endereço de e-mail</small>
+              </div>
+            </label>
+          </div>
+
+          <div class="toggle-group">
+            <label class="toggle-label">
+              <input 
+                type="checkbox" 
+                [(ngModel)]="settings.showPhone"
+                name="showPhone"
+              />
+              <span class="toggle-switch"></span>
+              <div class="toggle-content">
+                <strong>📱 Mostrar Telefone no Perfil</strong>
+                <small>Outras pessoas poderão ver seu número de telefone</small>
+              </div>
+            </label>
+          </div>
+
+          <div class="toggle-group">
+            <label class="toggle-label">
+              <input 
+                type="checkbox" 
+                [(ngModel)]="settings.allowMessages"
+                name="allowMessages"
+              />
+              <span class="toggle-switch"></span>
+              <div class="toggle-content">
+                <strong>💬 Permitir Mensagens Diretas</strong>
+                <small>Outros usuários podem enviar mensagens para você</small>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">
+            💾 Salvar Configurações
+          </button>
+        </div>
+      </form>
+    </div>
+
+  </section>
+</div>
+

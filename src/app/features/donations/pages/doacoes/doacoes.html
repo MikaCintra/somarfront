@@ -1,0 +1,146 @@
+<div class="doacoes-container">
+  <header class="page-header">
+    <div>
+      <h1>💝 Doações</h1>
+      <p *ngIf="userType === 'ong'">Acompanhe todas as doações recebidas</p>
+      <p *ngIf="userType !== 'ong'">Histórico das suas contribuições</p>
+    </div>
+    <app-theme-language-toggle></app-theme-language-toggle>
+  </header>
+
+  <!-- Estatísticas -->
+  <section class="stats-section">
+    <div class="stat-card">
+      <div class="stat-icon">💝</div>
+      <div class="stat-content">
+        <h3>{{ totalDonations }}</h3>
+        <p>Total de Doações</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">📦</div>
+      <div class="stat-content">
+        <h3>{{ totalItems }}</h3>
+        <p>Itens Doados</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">📊</div>
+      <div class="stat-content">
+        <h3>{{ Object.keys(categoriesCount).length }}</h3>
+        <p>Categorias</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Categorias Mais Doadas -->
+  <section class="categories-section" *ngIf="getTopCategories().length > 0">
+    <h2>📊 Categorias Mais {{ userType === 'ong' ? 'Recebidas' : 'Doadas' }}</h2>
+    <div class="categories-list">
+      <div class="category-item" *ngFor="let cat of getTopCategories()">
+        <div class="category-info">
+          <span class="category-name">{{ cat[0] }}</span>
+          <span class="category-count">{{ cat[1] }} doações</span>
+        </div>
+        <div class="category-bar">
+          <div class="category-fill" [style.width.%]="getCategoryPercentage(cat[0])"></div>
+        </div>
+        <span class="category-percentage">{{ getCategoryPercentage(cat[0]) }}%</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Filtros -->
+  <section class="filters-section">
+    <div class="filters-grid">
+      <div class="filter-item">
+        <label>🔍 Buscar</label>
+        <input 
+          type="text" 
+          [(ngModel)]="searchQuery"
+          placeholder="Pesquisar doações..."
+          class="filter-input"
+        />
+      </div>
+
+      <div class="filter-item">
+        <label>📂 Categoria</label>
+        <select 
+          [(ngModel)]="selectedCategory"
+          class="filter-select"
+        >
+          <option value="">Todas</option>
+          <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+        </select>
+      </div>
+
+      <button class="btn-clear" (click)="clearFilters()">
+        Limpar Filtros
+      </button>
+    </div>
+
+    <p class="results-count">
+      {{ getFilteredDonations().length }} doação(ões) encontrada(s)
+    </p>
+  </section>
+
+  <!-- Lista de Doações -->
+  <section class="donations-section">
+    <div class="donations-list">
+      <div class="donation-card" *ngFor="let item of getFilteredDonations()">
+        <div class="donation-header">
+          <div class="donation-campaign">
+            <span class="campaign-badge">{{ item.campaign.category }}</span>
+            <h3>{{ item.campaign.title }}</h3>
+          </div>
+          <span class="donation-date">{{ item.donation.date | date:'dd/MM/yyyy' }}</span>
+        </div>
+
+        <div class="donation-details">
+          <div class="detail-row">
+            <span class="detail-label">📦 Item:</span>
+            <span class="detail-value">{{ item.donation.item }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">🔢 Quantidade:</span>
+            <span class="detail-value">{{ item.donation.quantity }}</span>
+          </div>
+          <div class="detail-row" *ngIf="userType === 'ong'">
+            <span class="detail-label">👤 Doador:</span>
+            <span class="detail-value">{{ item.donation.donorName }}</span>
+          </div>
+          <div class="detail-row" *ngIf="userType !== 'ong'">
+            <span class="detail-label">🏢 ONG:</span>
+            <span class="detail-value">{{ item.campaign.ongName }}</span>
+          </div>
+          <div class="detail-row" *ngIf="item.campaign.location">
+            <span class="detail-label">📍 Local:</span>
+            <span class="detail-value">{{ item.campaign.location }}</span>
+          </div>
+        </div>
+
+        <div class="donation-footer">
+          <span class="donation-impact">✨ Contribuição registrada com sucesso!</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="empty-state" *ngIf="getFilteredDonations().length === 0 && totalDonations > 0">
+      <div class="empty-icon">🔍</div>
+      <h3>Nenhuma doação encontrada</h3>
+      <p>Tente ajustar os filtros de busca</p>
+    </div>
+
+    <div class="empty-state" *ngIf="totalDonations === 0">
+      <div class="empty-icon">💝</div>
+      <h3>Nenhuma doação ainda</h3>
+      <p *ngIf="userType === 'ong'">Quando receberem doações, elas aparecerão aqui</p>
+      <p *ngIf="userType !== 'ong'">Comece a fazer a diferença doando para campanhas ativas!</p>
+      <button class="btn-explore" *ngIf="userType !== 'ong'" (click)="router.navigate(['/campanhas'])">
+        Explorar Campanhas
+      </button>
+    </div>
+  </section>
+</div>

@@ -1,0 +1,62 @@
+@import "../../../../styles/variables.scss";
+
+.inputWrapper {
+    color: $text-color;
+    font-size: 14px;
+    text-align: start;
+    margin-bottom: 20px;
+
+    label {
+        margin-bottom: 8px;
+        font-weight: 500;
+        display: block;
+    }
+
+    .input-content {
+        width: 100%;
+        border-radius: 8px;
+        display: flex;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+
+        &:focus-within {
+            border-color: $primary-color;
+            box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.1);
+        }
+
+        .icon {
+            padding: 12px 14px;
+            background-color: $primary-color;
+            border-radius: 0 8px 8px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            img {
+                height: 20px;
+                width: 20px;
+                filter: brightness(0) invert(1);
+            }
+        }
+
+        input {
+            border-radius: 8px 0 0 8px;
+            background-color: $gray-secundary-bg;
+            border: none;
+            padding: 14px 16px;
+            width: 100%;
+            font-size: 15px;
+            color: $text-color;
+            transition: background-color 0.3s ease;
+
+            &::placeholder {
+                color: rgba($text-color, 0.5);
+            }
+
+            &:focus {
+                background-color: white;
+                outline: none;
+            }
+        }
+    }
+}

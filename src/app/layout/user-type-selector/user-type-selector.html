@@ -1,0 +1,28 @@
+<div class="user-type-selector">
+  <label>{{ label }}</label>
+  <div class="options">
+    <div 
+      class="option" 
+      [class.selected]="selectedType === 'doador'"
+      (click)="selectType('doador')"
+    >
+      <div class="icon">🤝</div>
+      <div class="content">
+        <h3>Doador / Voluntário</h3>
+        <p>Quero ajudar doando ou sendo voluntário</p>
+      </div>
+    </div>
+    
+    <div 
+      class="option" 
+      [class.selected]="selectedType === 'ong'"
+      (click)="selectType('ong')"
+    >
+      <div class="icon">🏢</div>
+      <div class="content">
+        <h3>ONG / Instituição</h3>
+        <p>Represento uma organização social</p>
+      </div>
+    </div>
+  </div>
+</div>

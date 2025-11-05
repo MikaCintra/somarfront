@@ -1,0 +1,43 @@
+<main>
+    <section class="form-section">
+        <img src="svg/logo-somar.svg" class="logo" alt="Logo Somar" />
+        <h2>{{title}}</h2>
+        <ng-content></ng-content>
+        <div class="btn-wrapper">
+            <button class="btn-primary" 
+            (click)="submit()"
+            [disabled]="disablePrimaryBtn"
+            >{{ primaryBtnText }}</button>
+            <div class="divider">
+                <div></div>
+                <span>ou</span>
+                <div></div>
+            </div>
+            <button class="btn-secundary" (click)="navigate()">{{ secundaryBtnText }}</button>
+        </div>
+    </section>
+
+    <section class="main-section">
+        <div class="content-wrapper">
+            <h1>Somar</h1>
+            <p class="tagline">Conectando solidariedade</p>
+            <p class="description">
+                Una ONGs, doadores e voluntários em uma plataforma que transforma boas intenções em ações concretas.
+            </p>
+            <div class="features">
+                <div class="feature">
+                    <span>🤝</span>
+                    <p>Conecte-se com ONGs</p>
+                </div>
+                <div class="feature">
+                    <span>💝</span>
+                    <p>Doe itens e alimentos</p>
+                </div>
+                <div class="feature">
+                    <span>🌟</span>
+                    <p>Seja voluntário</p>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>

@@ -1,0 +1,64 @@
+@import "../../../styles/variables.scss";
+
+.user-type-selector {
+  margin-bottom: 24px;
+
+  label {
+    display: block;
+    margin-bottom: 12px;
+    font-weight: 600;
+    font-size: 14px;
+    color: $text-color;
+  }
+
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    .option {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px;
+      border: 2px solid $gray-secundary-bg;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background-color: white;
+
+      &:hover {
+        border-color: $primary-color;
+        background-color: rgba($primary-color, 0.02);
+      }
+
+      &.selected {
+        border-color: $primary-color;
+        background-color: rgba($primary-color, 0.08);
+        box-shadow: 0 4px 12px rgba($primary-color, 0.15);
+      }
+
+      .icon {
+        font-size: 36px;
+        flex-shrink: 0;
+      }
+
+      .content {
+        flex-grow: 1;
+
+        h3 {
+          font-size: 16px;
+          font-weight: 600;
+          color: $text-color;
+          margin-bottom: 4px;
+        }
+
+        p {
+          font-size: 13px;
+          color: rgba($text-color, 0.7);
+          margin: 0;
+        }
+      }
+    }
+  }
+}

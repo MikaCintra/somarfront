@@ -1,0 +1,137 @@
+<div class="overview-container">
+  <header class="overview-header">
+    <div>
+      <h1>Olá, {{ userName }}! 👋</h1>
+      <p>Aqui está um resumo do seu impacto</p>
+    </div>
+    <app-theme-language-toggle></app-theme-language-toggle>
+  </header>
+
+  <!-- Métricas principais -->
+  <section class="metrics-grid">
+    <div class="metric-card" *ngIf="userType === 'ong'">
+      <div class="metric-icon">📢</div>
+      <div class="metric-content">
+        <h3>{{ totalCampaigns }}</h3>
+        <p>Campanhas Totais</p>
+        <span class="metric-detail">{{ activeCampaigns }} ativas</span>
+      </div>
+    </div>
+
+    <div class="metric-card" *ngIf="userType === 'ong'">
+      <div class="metric-icon">💝</div>
+      <div class="metric-content">
+        <h3>{{ totalDonations }}</h3>
+        <p>Doações Recebidas</p>
+      </div>
+    </div>
+
+    <div class="metric-card" *ngIf="userType === 'ong'">
+      <div class="metric-icon">🤝</div>
+      <div class="metric-content">
+        <h3>{{ totalVolunteerOpportunities }}</h3>
+        <p>Vagas de Voluntariado</p>
+      </div>
+    </div>
+
+    <div class="metric-card" *ngIf="userType === 'doador'">
+      <div class="metric-icon">💝</div>
+      <div class="metric-content">
+        <h3>{{ totalDonations }}</h3>
+        <p>Doações Realizadas</p>
+      </div>
+    </div>
+
+    <div class="metric-card" *ngIf="userType === 'doador'">
+      <div class="metric-icon">⏱️</div>
+      <div class="metric-content">
+        <h3>{{ totalVolunteerHours }}h</h3>
+        <p>Horas Voluntariadas</p>
+      </div>
+    </div>
+
+    <div class="metric-card" *ngIf="userType === 'doador'">
+      <div class="metric-icon">📢</div>
+      <div class="metric-content">
+        <h3>{{ totalCampaigns }}</h3>
+        <p>Campanhas Disponíveis</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Ações Rápidas -->
+  <section class="quick-actions">
+    <h2>⚡ Ações Rápidas</h2>
+    <div class="actions-grid">
+      <button class="action-card" (click)="navigateTo('/campanhas')" *ngIf="userType === 'ong'">
+        <span class="action-icon">➕</span>
+        <span class="action-text">Nova Campanha</span>
+      </button>
+      <button class="action-card" (click)="navigateTo('/voluntarios')" *ngIf="userType === 'ong'">
+        <span class="action-icon">🤝</span>
+        <span class="action-text">Nova Vaga Voluntário</span>
+      </button>
+      <button class="action-card" (click)="navigateTo('/doacoes')">
+        <span class="action-icon">💝</span>
+        <span class="action-text">Ver Doações</span>
+      </button>
+      <button class="action-card" (click)="navigateTo('/chat')">
+        <span class="action-icon">💬</span>
+        <span class="action-text">Mensagens</span>
+      </button>
+      <button class="action-card" (click)="navigateTo('/campanhas')" *ngIf="userType === 'doador'">
+        <span class="action-icon">🔍</span>
+        <span class="action-text">Explorar Campanhas</span>
+      </button>
+      <button class="action-card" (click)="navigateTo('/voluntarios')" *ngIf="userType === 'doador'">
+        <span class="action-icon">🌟</span>
+        <span class="action-text">Ser Voluntário</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- Atividades Recentes -->
+  <section class="recent-section">
+    <div class="section-header">
+      <h2>📊 Atividades Recentes</h2>
+      <a [routerLink]="['/campanhas']" class="view-all">Ver todas →</a>
+    </div>
+    
+    <div class="campaigns-list" *ngIf="recentCampaigns.length > 0">
+      <div class="campaign-item" *ngFor="let campaign of recentCampaigns">
+        <div class="campaign-info">
+          <h4>{{ campaign.title }}</h4>
+          <p>{{ campaign.category }}</p>
+        </div>
+        <div class="campaign-progress">
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="getProgressPercentage(campaign)"></div>
+          </div>
+          <span class="progress-text">{{ getProgressPercentage(campaign) }}%</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="empty-state" *ngIf="recentCampaigns.length === 0">
+      <p>Nenhuma campanha recente</p>
+    </div>
+  </section>
+
+  <!-- Oportunidades de Voluntariado -->
+  <section class="recent-section" *ngIf="recentOpportunities.length > 0">
+    <div class="section-header">
+      <h2>🤝 Oportunidades Recentes</h2>
+      <a [routerLink]="['/voluntarios']" class="view-all">Ver todas →</a>
+    </div>
+    
+    <div class="opportunities-list">
+      <div class="opportunity-item" *ngFor="let opp of recentOpportunities">
+        <div class="opp-icon">🌟</div>
+        <div class="opp-info">
+          <h4>{{ opp.title }}</h4>
+          <p>{{ opp.category }} • {{ opp.vacancies }} vagas</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

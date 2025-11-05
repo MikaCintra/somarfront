@@ -1,0 +1,349 @@
+<div class="marketplace-container">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1>🛒 Marketplace de Doações</h1>
+      <p class="subtitle">Conecte necessidades com doadores</p>
+    </div>
+    <div class="header-actions">
+      <app-theme-language-toggle></app-theme-language-toggle>
+      <button *ngIf="isONG" class="btn-primary" (click)="openAddItemModal()">
+        <span>➕</span> Adicionar Necessidade
+      </button>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button 
+      class="tab" 
+      [class.active]="activeTab === 'available'"
+      (click)="activeTab = 'available'">
+      📦 Itens Disponíveis
+      <span class="badge">{{ availableItems.length }}</span>
+    </button>
+    <button 
+      *ngIf="isONG"
+      class="tab" 
+      [class.active]="activeTab === 'wishlist'"
+      (click)="activeTab = 'wishlist'">
+      ⭐ Minhas Necessidades
+      <span class="badge">{{ myWishlist.length }}</span>
+    </button>
+    <button 
+      *ngIf="!isONG"
+      class="tab" 
+      [class.active]="activeTab === 'reservations'"
+      (click)="activeTab = 'reservations'">
+      🎯 Minhas Reservas
+      <span class="badge">{{ myReservations.length }}</span>
+    </button>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters" *ngIf="activeTab === 'available'">
+    <div class="search-box">
+      <input 
+        type="text" 
+        [(ngModel)]="searchTerm"
+        (input)="onSearch()"
+        placeholder="🔍 Buscar itens..."
+        class="search-input">
+    </div>
+    
+    <select [(ngModel)]="selectedCategory" (change)="onFilterChange()" class="filter-select">
+      <option *ngFor="let cat of categories" [value]="cat.value">
+        {{ cat.icon }} {{ cat.label }}
+      </option>
+    </select>
+    
+    <select [(ngModel)]="selectedUrgency" (change)="onFilterChange()" class="filter-select">
+      <option *ngFor="let urg of urgencyLevels" [value]="urg.value">
+        {{ urg.label }}
+      </option>
+    </select>
+    
+    <select [(ngModel)]="selectedCondition" (change)="onFilterChange()" class="filter-select">
+      <option *ngFor="let cond of conditions" [value]="cond.value">
+        {{ cond.icon }} {{ cond.label }}
+      </option>
+    </select>
+  </div>
+
+  <!-- Available Items -->
+  <div class="content-area" *ngIf="activeTab === 'available'">
+    <div class="items-grid" *ngIf="availableItems.length > 0">
+      <div class="item-card" *ngFor="let item of availableItems">
+        <div class="item-header">
+          <span class="category-icon">{{ getCategoryIcon(item.category) }}</span>
+          <span class="urgency-badge" [style.background]="getUrgencyColor(item.urgency)">
+            {{ item.urgency === 'high' ? 'Alta' : item.urgency === 'medium' ? 'Média' : 'Baixa' }}
+          </span>
+        </div>
+        
+        <h3 class="item-name">{{ item.title }}</h3>
+        <p class="item-description">{{ item.description }}</p>
+        
+        <div class="item-details">
+          <div class="detail-row">
+            <span class="label">Quantidade:</span>
+            <span class="value">{{ item.quantity }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Condição:</span>
+            <span class="value">{{ getConditionIcon(item.condition) }} 
+              {{ item.condition === 'new' ? 'Novo' : item.condition === 'used' ? 'Usado' : 'Qualquer' }}
+            </span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Solicitado por:</span>
+            <span class="value">{{ item.ongName }}</span>
+          </div>
+        </div>
+        
+        <button 
+          *ngIf="!isONG && item.status === 'available'"
+          class="btn-reserve" 
+          (click)="reserveItem(item)">
+          🎯 Reservar Item
+        </button>
+        
+        <div class="status-badge reserved" *ngIf="item.status === 'reserved'">
+          ⏳ Reservado
+        </div>
+        <div class="status-badge matched" *ngIf="item.status === 'fulfilled'">
+          ✅ Doado
+        </div>
+      </div>
+    </div>
+    
+    <div class="empty-state" *ngIf="availableItems.length === 0">
+      <span class="empty-icon">📭</span>
+      <h3>Nenhum item disponível</h3>
+      <p>Tente ajustar os filtros ou volte mais tarde</p>
+    </div>
+  </div>
+
+  <!-- Wishlist (ONG) -->
+  <div class="content-area" *ngIf="activeTab === 'wishlist' && isONG">
+    <div class="items-grid" *ngIf="myWishlist.length > 0">
+      <div class="item-card wishlist-card" *ngFor="let item of myWishlist">
+        <div class="item-header">
+          <span class="category-icon">{{ getCategoryIcon(item.category) }}</span>
+          <span class="urgency-badge" [style.background]="getUrgencyColor(item.urgency)">
+            {{ item.urgency === 'high' ? 'Alta' : item.urgency === 'medium' ? 'Média' : 'Baixa' }}
+          </span>
+        </div>
+        
+        <h3 class="item-name">{{ item.title }}</h3>
+        <p class="item-description">{{ item.description }}</p>
+        
+        <div class="item-details">
+          <div class="detail-row">
+            <span class="label">Quantidade:</span>
+            <span class="value">{{ item.quantity }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Status:</span>
+            <span class="value status-{{ item.status }}">
+              {{ item.status === 'available' ? '🟢 Aguardando' : item.status === 'reserved' ? '🟡 Reservado' : '✅ Recebido' }}
+            </span>
+          </div>
+        </div>
+        
+        <div class="card-actions">
+          <button class="btn-secondary" (click)="viewMatches(item)">
+            👥 Ver Correspondências
+          </button>
+          <button class="btn-danger" (click)="removeFromWishlist(item)">
+            🗑️ Remover
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="empty-state" *ngIf="myWishlist.length === 0">
+      <span class="empty-icon">⭐</span>
+      <h3>Nenhuma necessidade cadastrada</h3>
+      <p>Adicione itens que sua ONG precisa receber</p>
+      <button class="btn-primary" (click)="openAddItemModal()">
+        ➕ Adicionar Necessidade
+      </button>
+    </div>
+  </div>
+
+  <!-- Reservations (Donor) -->
+  <div class="content-area" *ngIf="activeTab === 'reservations' && !isONG">
+    <div class="reservations-list" *ngIf="myReservations.length > 0">
+      <div class="reservation-card" *ngFor="let reservation of myReservations">
+        <div class="reservation-header">
+          <div>
+            <h3>{{ reservation.itemName }}</h3>
+            <p class="ong-name">Para: {{ reservation.ongName }}</p>
+          </div>
+          <span class="status-badge" [class]="reservation.status">
+            {{ reservation.status === 'pending' ? '⏳ Pendente' : 
+               reservation.status === 'completed' ? '✅ Concluído' : 
+               '❌ Cancelado' }}
+          </span>
+        </div>
+        
+        <div class="reservation-details">
+          <div class="detail-item">
+            <span class="icon">📅</span>
+            <div>
+              <strong>Reservado em:</strong>
+              <p>{{ reservation.reservedAt | date: 'dd/MM/yyyy HH:mm' }}</p>
+            </div>
+          </div>
+          
+          <div class="detail-item" *ngIf="reservation.status === 'pending' && reservation.expiresAt">
+            <span class="icon">⏰</span>
+            <div>
+              <strong>Expira em:</strong>
+              <p class="time-remaining">{{ getTimeRemaining(reservation.expiresAt!) }}</p>
+            </div>
+          </div>
+          
+          <div class="detail-item" *ngIf="reservation.completedAt">
+            <span class="icon">✅</span>
+            <div>
+              <strong>Concluído em:</strong>
+              <p>{{ reservation.completedAt | date: 'dd/MM/yyyy HH:mm' }}</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="reservation-actions" *ngIf="reservation.status === 'pending'">
+          <button class="btn-success" (click)="completeReservation(reservation)">
+            ✅ Marcar como Doado
+          </button>
+          <button class="btn-danger-outline" (click)="cancelReservation(reservation)">
+            ❌ Cancelar
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="empty-state" *ngIf="myReservations.length === 0">
+      <span class="empty-icon">🎯</span>
+      <h3>Nenhuma reserva ativa</h3>
+      <p>Reserve itens para ajudar ONGs necessitadas</p>
+      <button class="btn-primary" (click)="activeTab = 'available'">
+        📦 Ver Itens Disponíveis
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Item Modal -->
+<div class="modal-overlay" *ngIf="showAddItemModal" (click)="closeAddItemModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>➕ Adicionar Necessidade</h2>
+      <button class="close-btn" (click)="closeAddItemModal()">✕</button>
+    </div>
+    
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Nome do Item *</label>
+        <input type="text" [(ngModel)]="newItem.title" placeholder="Ex: Cestas Básicas" class="form-input">
+      </div>
+      
+      <div class="form-group">
+        <label>Descrição *</label>
+        <textarea [(ngModel)]="newItem.description" rows="3" placeholder="Descreva o item e sua importância..." class="form-textarea"></textarea>
+      </div>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label>Categoria *</label>
+          <select [(ngModel)]="newItem.category" class="form-select">
+            <option *ngFor="let cat of categories.slice(1)" [value]="cat.value">
+              {{ cat.icon }} {{ cat.label }}
+            </option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label>Urgência *</label>
+          <select [(ngModel)]="newItem.urgency" class="form-select">
+            <option *ngFor="let urg of urgencyLevels.slice(1)" [value]="urg.value">
+              {{ urg.label }}
+            </option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label>Condição Aceita *</label>
+          <select [(ngModel)]="newItem.condition" class="form-select">
+            <option *ngFor="let cond of conditions.slice(1)" [value]="cond.value">
+              {{ cond.icon }} {{ cond.label }}
+            </option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label>Quantidade *</label>
+          <input type="number" [(ngModel)]="newItem.quantity" min="1" class="form-input">
+        </div>
+      </div>
+    </div>
+    
+    <div class="modal-footer">
+      <button class="btn-secondary" (click)="closeAddItemModal()">Cancelar</button>
+      <button class="btn-primary" (click)="addItemToWishlist()">➕ Adicionar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Match Modal -->
+<div class="modal-overlay" *ngIf="showMatchModal" (click)="closeMatchModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>👥 Correspondências Potenciais</h2>
+      <button class="close-btn" (click)="closeMatchModal()">✕</button>
+    </div>
+    
+    <div class="modal-body">
+      <div class="match-info" *ngIf="selectedItem">
+        <h3>{{ selectedItem.title }}</h3>
+        <p>{{ selectedItem.description }}</p>
+      </div>
+      
+      <div class="matches-list">
+        <div class="match-item">
+          <div class="match-score">
+            <div class="score-circle">95%</div>
+            <span>Match</span>
+          </div>
+          <div class="match-details">
+            <h4>João Silva</h4>
+            <p>Doou 15 vezes • ⭐ 4.9</p>
+            <p class="match-reason">✅ Histórico com esta categoria</p>
+          </div>
+        </div>
+        
+        <div class="match-item">
+          <div class="match-score">
+            <div class="score-circle">87%</div>
+            <span>Match</span>
+          </div>
+          <div class="match-details">
+            <h4>Maria Santos</h4>
+            <p>Doou 8 vezes • ⭐ 5.0</p>
+            <p class="match-reason">✅ Próxima da sua região</p>
+          </div>
+        </div>
+        
+        <p class="info-text">💡 Doadores serão notificados automaticamente sobre esta necessidade</p>
+      </div>
+    </div>
+    
+    <div class="modal-footer">
+      <button class="btn-primary" (click)="closeMatchModal()">Fechar</button>
+    </div>
+  </div>
+</div>
