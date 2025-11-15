@@ -142,21 +142,20 @@ export class DashboardOng implements OnInit {
         }
       } else {
         // Criar nova campanha
-        this.campaignsService.createCampaign({
-          ongEmail: this.currentUserEmail,
-          ongName: this.currentUserName,
-          title: formValue.title,
-          description: formValue.description,
-          goal: formValue.goal,
-          current: 0,
-          category: formValue.category,
-          urgency: 'medium',
-          location: formValue.location || 'Brasil',
-          status: 'active'
+        this.campaignsService.saveCampaign(
+          formValue.title,
+          formValue.description,
+          formValue.goal,
+          formValue.location || 'Brasil'
+        ).subscribe({
+          next: () => {
+            alert('Campanha criada com sucesso! 🎉');
+            this.loadCampaigns();
+          },
+          error: (error) => {
+            console.error('Erro ao criar campanha:', error);
+          }
         });
-
-        alert('Campanha criada com sucesso! 🎉');
-        this.loadCampaigns();
       }
 
       this.closeModal();

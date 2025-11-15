@@ -1,4 +1,7 @@
 import { Injectable } from '@angular/core';
+import { catchError, Observable, tap, throwError } from 'rxjs';
+import { CampaignResponse } from '../../../shared';
+import { ApiService } from '../../../core/services/api.service';
 
 export interface Donation {
   donorEmail: string;
@@ -28,14 +31,24 @@ export interface Campaign {
   donations?: Donation[];
 }
 
+interface SaveCampaignRequest{
+  titulo: string;
+  descricao: string;
+  meta: number;
+  localizacao: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class CampaignsService {
   private storageKey = 'somar-campaigns';
 
-  constructor() {
+  constructor(
+    private apiService: ApiService
+  ) {
     this.initializeMockCampaigns();
+    
   }
 
   private initializeMockCampaigns() {
@@ -168,6 +181,27 @@ export class CampaignsService {
     sessionStorage.setItem(this.storageKey, JSON.stringify(campaigns));
     
     return newCampaign;
+  }
+
+  saveCampaign(titulo: string, descricao: string, meta: number, localizacao: string): Observable<CampaignResponse> {
+
+    const request: SaveCampaignRequest = { titulo, descricao, meta, localizacao };
+
+    return this.apiService.post<CampaignResponse>('campanha/cadastrar', request).pipe(
+      tap((response) => {
+        //salvar dados da sessão
+        sessionStorage.setItem('titulo', response.titulo);
+        sessionStorage.setItem('descricao', response.descricao);
+        sessionStorage.setItem('meta', response.meta.toString());
+        sessionStorage.setItem('localizao', response.localizacao);
+        
+      }),
+      catchError((error) => {
+        console.error('Erro ao cadastrar campanha: ', error);
+        return throwError(() => new Error('Erro ao criar uma campanha. Tente novamente'));
+      })
+
+    );
   }
 
   updateCampaign(id: number, updates: Partial<Campaign>): boolean {

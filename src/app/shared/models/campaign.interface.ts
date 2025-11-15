@@ -45,3 +45,10 @@ export interface VolunteerRegistration {
   status: 'pending' | 'approved' | 'rejected' | 'completed';
   hours?: number;
 }
+
+export type CampaignResponse = {
+  titulo: string;
+  descricao: string;
+  meta: number;
+  localizacao: string;
+}

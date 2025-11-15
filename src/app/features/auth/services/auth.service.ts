@@ -10,7 +10,7 @@ interface MockUser {
   email: string;
   senha: string;
   name: string;
-  userType: 'admin' | 'ong' | 'doador';
+  tipo: 'admin' | 'ong' | 'doador';
 }
 
 interface LoginRequest {
@@ -22,7 +22,7 @@ interface SignupRequest {
   nome: string;
   email: string;
   senha: string;
-  userType: 'ong' | 'doador';
+  tipo: 'ong' | 'doador';
 }
 
 @Injectable({
@@ -36,19 +36,19 @@ export class LoginService {
       email: 'admin@somar.com',
       senha: 'admin123',
       name: 'Administrador Somar',
-      userType: 'admin'
+      tipo: 'admin'
     },
     {
       email: 'ong@somar.com',
       senha: 'ong123',
       name: 'ONG Amor Solidário',
-      userType: 'ong'
+      tipo: 'ong'
     },
     {
       email: 'doador@somar.com',
       senha: 'doador123',
       name: 'João Silva',
-      userType: 'doador'
+      tipo: 'doador'
     }
   ];
 
@@ -59,9 +59,9 @@ export class LoginService {
 
   login(email: string, senha: string): Observable<LoginResponse> {
     // Se modo mock estiver ativado, usar dados mockados
-    if (environment.enableMockData) {
-      return this.mockLogin(email, senha);
-    }
+    // if (environment.enableMockData) {
+    //   return this.mockLogin(email, senha);
+    // }
 
     // Produção: usar API real
     const request: LoginRequest = { email, senha };
@@ -73,9 +73,9 @@ export class LoginService {
         sessionStorage.setItem('username', response.name);
         sessionStorage.setItem('user-email', email);
         // userType virá do backend no response
-        if ('userType' in response) {
-          sessionStorage.setItem('user-type', (response as any).userType);
-        }
+        // if ('userType' in response) {
+        //   sessionStorage.setItem('user-type', (response as any).userType);
+        // }
       }),
       catchError((error) => {
         console.error('Erro no login:', error);
@@ -99,7 +99,7 @@ export class LoginService {
       sessionStorage.setItem('auth-token', response.token);
       sessionStorage.setItem('username', response.name);
       sessionStorage.setItem('user-email', user.email);
-      sessionStorage.setItem('user-type', user.userType);
+      sessionStorage.setItem('user-tipo', user.tipo);
       
       // Simula delay de rede
       return of(response).pipe(delay(500));
@@ -108,22 +108,22 @@ export class LoginService {
     }
   }
 
-  signup(nome: string, email: string, senha: string, userType: 'ong' | 'doador' = 'doador'): Observable<LoginResponse> {
+  signup(nome: string, email: string, senha: string, tipo: 'ong' | 'doador' = 'doador'): Observable<LoginResponse> {
     // Se modo mock estiver ativado, usar dados mockados
-    if (environment.enableMockData) {
-      return this.mockSignup(nome, email, senha, userType);
-    }
+    // if (environment.enableMockData) {
+    //   return this.mockSignup(nome, email, senha, userType);
+    // }
 
     // Produção: usar API real
-    const request: SignupRequest = { nome, email, senha, userType };
+    const request: SignupRequest = { nome, email, senha, tipo };
     
-    return this.apiService.post<LoginResponse>('auth/signup', request).pipe(
+    return this.apiService.post<LoginResponse>('auth/register', request).pipe(
       tap((response) => {
         // Salvar dados da sessão
         sessionStorage.setItem('auth-token', response.token);
         sessionStorage.setItem('username', response.name);
         sessionStorage.setItem('user-email', email);
-        sessionStorage.setItem('user-type', userType);
+        sessionStorage.setItem('user-type', tipo);
       }),
       catchError((error) => {
         console.error('Erro no cadastro:', error);

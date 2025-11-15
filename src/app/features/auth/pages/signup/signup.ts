@@ -8,7 +8,7 @@ import { LoginService } from '../../services/auth.service';
 // import { ToastrService } from 'ngx-toastr';
 
 interface SignupForm{
-  userType: FormControl,
+  tipo: FormControl,
   name: FormControl,
   email: FormControl,
   password: FormControl,
@@ -35,7 +35,7 @@ export class Signup {
     // private toastService: ToastrService
   ) {
     this.signupForm = new FormGroup({
-      userType: new FormControl(null, [Validators.required]),
+      tipo: new FormControl(null, [Validators.required]),
       name: new FormControl('', [Validators.required, Validators.minLength(3)]),
       email: new FormControl('', [Validators.required, Validators.email]),
       password: new FormControl('', [Validators.required, Validators.minLength(6)]),
@@ -45,19 +45,19 @@ export class Signup {
 
   submit(){
     console.log(this.signupForm.value)
-    const userType = this.signupForm.value.userType;
+    const tipo = this.signupForm.value.tipo;
     
     this.loginService.signup(
       this.signupForm.value.name,
       this.signupForm.value.email, 
       this.signupForm.value.password,
-      userType
+      tipo
     ).subscribe({
       next: () => {
         alert("Conta criada com sucesso! Comece a fazer a diferença 🌟");
         
         // Redireciona baseado no tipo de usuário
-        if (userType === 'ong') {
+        if (tipo === 'ong') {
           this.router.navigate(['/dashboard/ong']);
         } else {
           this.router.navigate(['/dashboard/doador']);
@@ -65,6 +65,8 @@ export class Signup {
       },
       error: () => alert("Erro ao criar conta. Tente novamente.")
     })
+
+    console.log("Formulário enviado:", this.signupForm.value);
   }
 
   navigate(){
