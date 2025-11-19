@@ -69,13 +69,14 @@ export class LoginService {
     return this.apiService.post<LoginResponse>('auth/login', request).pipe(
       tap((response) => {
         // Salvar dados da sessão
+        console.log("Response de login: ", response)
         sessionStorage.setItem('auth-token', response.token);
         sessionStorage.setItem('username', response.name);
         sessionStorage.setItem('user-email', email);
-        // userType virá do backend no response
-        // if ('userType' in response) {
-        //   sessionStorage.setItem('user-type', (response as any).userType);
-        // }
+        //userType virá do backend no response
+        if ('tipo' in response) {
+          sessionStorage.setItem('tipo', (response as any).tipo);
+        }
       }),
       catchError((error) => {
         console.error('Erro no login:', error);
@@ -87,26 +88,26 @@ export class LoginService {
   /**
    * Login mockado para desenvolvimento
    */
-  private mockLogin(email: string, senha: string): Observable<LoginResponse> {
-    const user = this.mockUsers.find(u => u.email === email && u.senha === senha);
+  // private mockLogin(email: string, senha: string): Observable<LoginResponse> {
+  //   const user = this.mockUsers.find(u => u.email === email && u.senha === senha);
     
-    if (user) {
-      const response: LoginResponse = {
-        token: 'mock-token-' + Date.now(),
-        name: user.name
-      };
+  //   if (user) {
+  //     const response: LoginResponse = {
+  //       //token: 'mock-token-' + Date.now(),
+  //       name: user.name
+  //     };
       
-      sessionStorage.setItem('auth-token', response.token);
-      sessionStorage.setItem('username', response.name);
-      sessionStorage.setItem('user-email', user.email);
-      sessionStorage.setItem('user-tipo', user.tipo);
+  //     //sessionStorage.setItem('auth-token', response.token);
+  //     sessionStorage.setItem('username', response.name);
+  //     sessionStorage.setItem('user-email', user.email);
+  //     sessionStorage.setItem('user-tipo', user.tipo);
       
-      // Simula delay de rede
-      return of(response).pipe(delay(500));
-    } else {
-      return throwError(() => new Error('Credenciais inválidas')).pipe(delay(500));
-    }
-  }
+  //     // Simula delay de rede
+  //     return of(response).pipe(delay(500));
+  //   } else {
+  //     return throwError(() => new Error('Credenciais inválidas')).pipe(delay(500));
+  //   }
+  // }
 
   signup(nome: string, email: string, senha: string, tipo: 'ong' | 'doador' = 'doador'): Observable<LoginResponse> {
     // Se modo mock estiver ativado, usar dados mockados
@@ -119,11 +120,12 @@ export class LoginService {
     
     return this.apiService.post<LoginResponse>('auth/register', request).pipe(
       tap((response) => {
+        console.log("Response:", response)
         // Salvar dados da sessão
-        sessionStorage.setItem('auth-token', response.token);
+        //sessionStorage.setItem('auth-token', response.token);
         sessionStorage.setItem('username', response.name);
         sessionStorage.setItem('user-email', email);
-        sessionStorage.setItem('user-type', tipo);
+        sessionStorage.setItem('tipo', tipo);
       }),
       catchError((error) => {
         console.error('Erro no cadastro:', error);
@@ -135,26 +137,27 @@ export class LoginService {
   /**
    * Cadastro mockado para desenvolvimento
    */
-  private mockSignup(nome: string, email: string, senha: string, userType: 'ong' | 'doador'): Observable<LoginResponse> {
-    const response: LoginResponse = {
-      token: 'mock-token-' + Date.now(),
-      name: nome
-    };
+  // private mockSignup(nome: string, email: string, senha: string, userType: 'ong' | 'doador'): Observable<LoginResponse> {
+  //   const response: LoginResponse = {
+  //     //token: 'mock-token-' + Date.now(),
+  //     name: nome,
+  //     userType: ''
+  //   };
     
-    sessionStorage.setItem('auth-token', response.token);
-    sessionStorage.setItem('username', nome);
-    sessionStorage.setItem('user-email', email);
-    sessionStorage.setItem('user-type', userType);
+  //   //sessionStorage.setItem('auth-token', response.token);
+  //   sessionStorage.setItem('username', nome);
+  //   sessionStorage.setItem('user-email', email);
+  //   sessionStorage.setItem('user-type', userType);
     
-    return of(response).pipe(delay(500));
-  }
+  //   return of(response).pipe(delay(500));
+  // }
 
   isLoggedIn(): boolean {
     return !!sessionStorage.getItem('auth-token');
   }
 
   getUserType(): 'admin' | 'ong' | 'doador' | null {
-    return sessionStorage.getItem('user-type') as 'admin' | 'ong' | 'doador' | null;
+    return sessionStorage.getItem('tipo') as 'admin' | 'ong' | 'doador' | null;
   }
 
   getUsername(): string | null {

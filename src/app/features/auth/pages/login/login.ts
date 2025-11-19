@@ -34,13 +34,15 @@ export class Login {
     console.log(this.loginForm.value)
     this.loginService.login(this.loginForm.value.email, this.loginForm.value.senha).subscribe({
       next: () => {
-        const userType = this.loginService.getUserType();
+        const tipo = this.loginService.getUserType();
         const username = this.loginService.getUsername();
+
+        console.log("Tipo do usuario:", tipo)
         
         alert(`Login realizado com sucesso! Bem-vindo à Somar, ${username}! 🤝`);
         
         // Redireciona baseado no tipo de usuário
-        if (userType === 'ong' || userType === 'admin') {
+        if (tipo === 'ong' || tipo === 'admin') {
           this.router.navigate(['/dashboard/ong']);
         } else {
           this.router.navigate(['/dashboard/doador']);
