@@ -25,7 +25,7 @@ export class MainLayout implements OnInit {
   ngOnInit() {
     this.currentUserName = sessionStorage.getItem('username') || 'Usuário';
     this.currentUserEmail = sessionStorage.getItem('user-email') || '';
-    this.userType = sessionStorage.getItem('user-type') || 'doador';
+    this.userType = sessionStorage.getItem('tipo') || 'doador';
   }
 
   logout() {
