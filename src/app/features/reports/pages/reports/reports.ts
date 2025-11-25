@@ -4,6 +4,18 @@ import { FormsModule } from '@angular/forms';
 import { ReportsService, ReportConfig } from '../../services/reports.service';
 import { ThemeLanguageToggle } from '../../../../shared/components/theme-language-toggle/theme-language-toggle';
 
+interface GeneratedReport {
+  id: number;
+  name: string;
+  type: string;
+  format: string;
+  fileUrl?: string;
+  generatedAt?: Date;
+  fileSize?: number;
+  recordsCount?: number;
+  sentAt?: Date;
+}
+
 @Component({
   selector: 'app-reports',
   standalone: true,
@@ -14,7 +26,7 @@ import { ThemeLanguageToggle } from '../../../../shared/components/theme-languag
 export class ReportsComponent implements OnInit {
   // Lists
   scheduledReports: ReportConfig[] = [];
-  generatedReports: any[] = []; // Mock generated reports
+  generatedReports: GeneratedReport[] = [];
   
   // View state
   activeTab: 'scheduled' | 'generated' = 'scheduled';
@@ -234,7 +246,7 @@ export class ReportsComponent implements OnInit {
     this.loadGeneratedReports();
   }
   
-  downloadReport(report: any) {
+  downloadReport(report: GeneratedReport) {
     if (report.fileUrl) {
       window.open(report.fileUrl, '_blank');
     } else {
@@ -242,7 +254,7 @@ export class ReportsComponent implements OnInit {
     }
   }
   
-  sendReport(report: any) {
+  sendReport(report: GeneratedReport) {
     alert('Relatório enviado por email! 📧');
   }
   

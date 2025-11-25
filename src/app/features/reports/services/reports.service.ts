@@ -220,7 +220,7 @@ export class ReportsService {
     if (config) {
       config.active = true;
       this.updateReportConfig(configId, { active: true });
-      console.log(`Relatório "${config.name}" agendado para: ${config.nextGeneration}`);
+      // Relatório agendado para: config.nextGeneration
     }
   }
 
@@ -231,7 +231,7 @@ export class ReportsService {
 
     configs.forEach(config => {
       if (config.nextGeneration && new Date(config.nextGeneration) <= now) {
-        console.log(`Gerando relatório agendado: ${config.name}`);
+        // Gerando relatório agendado: config.name
         // Aqui seria chamada a função para enviar por email
         this.generateReport(config.id);
       }

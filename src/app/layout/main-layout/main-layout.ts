@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { LoginService } from '../../features/auth/services/auth.service';
 import { ThemeLanguageToggle } from '../../shared/components/theme-language-toggle/theme-language-toggle';
+import { I18nService } from '../../core/services/i18n.service';
+import { StorageService } from '../../core/services/storage.service';
 
 @Component({
   selector: 'app-main-layout',
@@ -19,13 +21,15 @@ export class MainLayout implements OnInit {
 
   constructor(
     private router: Router,
-    private loginService: LoginService
+    private loginService: LoginService,
+    public i18n: I18nService,
+    private storage: StorageService
   ) {}
 
   ngOnInit() {
-    this.currentUserName = sessionStorage.getItem('username') || 'Usuário';
-    this.currentUserEmail = sessionStorage.getItem('user-email') || '';
-    this.userType = sessionStorage.getItem('user-type') || 'doador';
+    this.currentUserName = this.storage.getUsername() || 'Usuário';
+    this.currentUserEmail = this.storage.getUserEmail() || '';
+    this.userType = this.storage.getUserType() || 'doador';
   }
 
   logout() {
@@ -40,5 +44,12 @@ export class MainLayout implements OnInit {
   // Navegação baseada no tipo de usuário
   getDashboardRoute(): string {
     return this.userType === 'ong' ? '/dashboard/ong' : '/dashboard/doador';
+  }
+
+  // Obtém o label traduzido do tipo de usuário
+  getUserTypeLabel(): string {
+    const normalizedType = this.userType.toLowerCase();
+    const key = `userType.${normalizedType}`;
+    return this.i18n.t(key);
   }
 }

@@ -5,6 +5,8 @@ import { Observable, of, throwError } from 'rxjs';
 import { delay, tap, catchError } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
 import { ApiService } from '../../../core/services/api.service';
+import { LoggerService } from '../../../core/services/logger.service';
+import { StorageService } from '../../../core/services/storage.service';
 
 interface MockUser {
   email: string;
@@ -16,6 +18,7 @@ interface MockUser {
 interface LoginRequest {
   email: string;
   senha: string;
+  [key: string]: unknown;
 }
 
 interface SignupRequest {
@@ -23,6 +26,7 @@ interface SignupRequest {
   email: string;
   senha: string;
   userType: 'ong' | 'doador';
+  [key: string]: unknown;
 }
 
 @Injectable({
@@ -31,12 +35,12 @@ interface SignupRequest {
 export class LoginService {
 
   // Usuários mockados para teste
-  private mockUsers: MockUser[] = [
+  private mockUsers = [
     {
       email: 'admin@somar.com',
       senha: 'admin123',
       name: 'Administrador Somar',
-      userType: 'admin'
+      userType: 'administrador'
     },
     {
       email: 'ong@somar.com',
@@ -54,7 +58,9 @@ export class LoginService {
 
   constructor(
     private httpClient: HttpClient,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private logger: LoggerService,
+    private storage: StorageService
   ) { }
 
   login(email: string, senha: string): Observable<LoginResponse> {
@@ -69,16 +75,16 @@ export class LoginService {
     return this.apiService.post<LoginResponse>('auth/login', request).pipe(
       tap((response) => {
         // Salvar dados da sessão
-        sessionStorage.setItem('auth-token', response.token);
-        sessionStorage.setItem('username', response.name);
-        sessionStorage.setItem('user-email', email);
+        this.storage.setAuthToken(response.token);
+        this.storage.setUsername(response.name);
+        this.storage.setUserEmail(email);
         // userType virá do backend no response
         if ('userType' in response) {
-          sessionStorage.setItem('user-type', (response as any).userType);
+          this.storage.setUserType((response as any).userType);
         }
       }),
       catchError((error) => {
-        console.error('Erro no login:', error);
+        this.logger.error('Erro no login', error);
         return throwError(() => new Error('Erro ao fazer login. Verifique suas credenciais.'));
       })
     );
@@ -96,10 +102,10 @@ export class LoginService {
         name: user.name
       };
       
-      sessionStorage.setItem('auth-token', response.token);
-      sessionStorage.setItem('username', response.name);
-      sessionStorage.setItem('user-email', user.email);
-      sessionStorage.setItem('user-type', user.userType);
+      this.storage.setAuthToken(response.token);
+      this.storage.setUsername(response.name);
+      this.storage.setUserEmail(user.email);
+      this.storage.setUserType(user.userType as any);
       
       // Simula delay de rede
       return of(response).pipe(delay(500));
@@ -120,13 +126,13 @@ export class LoginService {
     return this.apiService.post<LoginResponse>('auth/signup', request).pipe(
       tap((response) => {
         // Salvar dados da sessão
-        sessionStorage.setItem('auth-token', response.token);
-        sessionStorage.setItem('username', response.name);
-        sessionStorage.setItem('user-email', email);
-        sessionStorage.setItem('user-type', userType);
+        this.storage.setAuthToken(response.token);
+        this.storage.setUsername(response.name);
+        this.storage.setUserEmail(email);
+        this.storage.setUserType(userType);
       }),
       catchError((error) => {
-        console.error('Erro no cadastro:', error);
+        this.logger.error('Erro no cadastro', error);
         return throwError(() => new Error('Erro ao criar conta. Tente novamente.'));
       })
     );
@@ -141,39 +147,39 @@ export class LoginService {
       name: nome
     };
     
-    sessionStorage.setItem('auth-token', response.token);
-    sessionStorage.setItem('username', nome);
-    sessionStorage.setItem('user-email', email);
-    sessionStorage.setItem('user-type', userType);
+    this.storage.setAuthToken(response.token);
+    this.storage.setUsername(nome);
+    this.storage.setUserEmail(email);
+    this.storage.setUserType(userType);
     
     return of(response).pipe(delay(500));
   }
 
   isLoggedIn(): boolean {
-    return !!sessionStorage.getItem('auth-token');
+    return this.storage.isLoggedIn();
   }
 
-  getUserType(): 'admin' | 'ong' | 'doador' | null {
-    return sessionStorage.getItem('user-type') as 'admin' | 'ong' | 'doador' | null;
+  getUserType(): 'admin' | 'administrador' | 'ong' | 'doador' | 'voluntario' | null {
+    return this.storage.getUserType() || null;
   }
 
   getUsername(): string | null {
-    return sessionStorage.getItem('username');
+    return this.storage.getUsername() || null;
   }
 
   getUserEmail(): string | null {
-    return sessionStorage.getItem('user-email');
+    return this.storage.getUserEmail() || null;
   }
 
   logout(): void {
     // Limpar sessão local
-    sessionStorage.clear();
+    this.storage.clearUserData();
     
     // Se estiver usando API real, notificar o backend
     if (!environment.enableMockData) {
       this.apiService.post('auth/logout', {}).subscribe({
-        next: () => console.log('Logout realizado com sucesso'),
-        error: (error) => console.error('Erro ao fazer logout:', error)
+        next: () => this.logger.log('Logout realizado com sucesso'),
+        error: (error) => this.logger.error('Erro ao fazer logout', error)
       });
     }
   }

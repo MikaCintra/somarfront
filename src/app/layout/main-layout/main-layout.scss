@@ -56,6 +56,12 @@
         background-color: rgba(76, 175, 80, 0.3);
         color: #fff;
       }
+
+      &.administrador,
+      &.admin {
+        background-color: rgba(156, 39, 176, 0.3);
+        color: #fff;
+      }
     }
   }
 

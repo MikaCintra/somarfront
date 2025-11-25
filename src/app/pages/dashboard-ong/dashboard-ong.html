@@ -2,12 +2,12 @@
   <!-- Header -->
   <header class="dashboard-header">
     <div>
-      <h1>Bem-vinda, {{ currentUserName }}! 👋</h1>
-      <p>Gerencie suas campanhas e acompanhe o impacto social</p>
+      <h1>{{ i18n.t('dashboard.ong.welcome') }}, {{ currentUserName }}! 👋</h1>
+      <p>{{ i18n.t('dashboard.ong.subtitle') }}</p>
     </div>
     <div class="header-actions">
         <app-theme-language-toggle></app-theme-language-toggle>
-        <button class="btn-primary" (click)="openNewCampaignModal()">+ Nova Campanha</button>
+        <button class="btn-primary" (click)="openNewCampaignModal()">+ {{ i18n.t('dashboard.ong.newCampaign') }}</button>
       </div>
     </header>
 
@@ -16,28 +16,28 @@
       <div class="stat-card">
         <div class="stat-icon green">📢</div>
         <div class="stat-info">
-          <h3>Campanhas Ativas</h3>
+          <h3>{{ i18n.t('dashboard.ong.activeCampaigns') }}</h3>
           <p class="stat-value">{{ campaigns.length }}</p>
         </div>
       </div>
       <div class="stat-card">
         <div class="stat-icon blue">🤝</div>
         <div class="stat-info">
-          <h3>Doadores Ativos</h3>
+          <h3>{{ i18n.t('dashboard.ong.activeDonors') }}</h3>
           <p class="stat-value">{{ donorsStats.active }}</p>
         </div>
       </div>
       <div class="stat-card">
         <div class="stat-icon orange">💝</div>
         <div class="stat-info">
-          <h3>Total de Doações</h3>
+          <h3>{{ i18n.t('dashboard.ong.totalDonations') }}</h3>
           <p class="stat-value">{{ donorsStats.totalDonations }}</p>
         </div>
       </div>
       <div class="stat-card">
         <div class="stat-icon purple">📈</div>
         <div class="stat-info">
-          <h3>Horas Voluntárias</h3>
+          <h3>{{ i18n.t('dashboard.ong.volunteerHours') }}</h3>
           <p class="stat-value">{{ donorsStats.totalVolunteerHours }}h</p>
         </div>
       </div>
@@ -45,12 +45,12 @@
 
     <!-- Campaigns Section -->
     <section class="section">
-      <h2>Campanhas em Andamento</h2>
+      <h2>{{ i18n.t('dashboard.ong.ongoingCampaigns') }}</h2>
       <div class="campaigns-grid">
         <div class="campaign-card" *ngFor="let campaign of campaigns">
           <div class="campaign-header">
             <h3>{{ campaign.title }}</h3>
-            <span class="badge">{{ campaign.category }}</span>
+            <span class="badge">{{ i18n.translateCategory(campaign.category) }}</span>
           </div>
           <p class="campaign-description">{{ campaign.description }}</p>
           <div class="campaign-progress">
@@ -58,13 +58,13 @@
               <div class="progress-fill" [style.width.%]="getProgress(campaign)"></div>
             </div>
             <div class="progress-info">
-              <span>{{ campaign.current }} / {{ campaign.goal }} itens</span>
+              <span>{{ campaign.current }} / {{ campaign.goal }} {{ i18n.t('dashboard.ong.items') }}</span>
               <span class="progress-percent">{{ getProgress(campaign) | number:'1.0-0' }}%</span>
             </div>
           </div>
           <div class="campaign-actions">
-            <button class="btn-text" (click)="openEditCampaignModal(campaign)">✏️ Editar</button>
-            <button class="btn-text btn-danger" (click)="deleteCampaign(campaign.id)">🗑️ Excluir</button>
+            <button class="btn-text" (click)="openEditCampaignModal(campaign)">✏️ {{ i18n.t('common.edit') }}</button>
+            <button class="btn-text btn-danger" (click)="deleteCampaign(campaign.id)">🗑️ {{ i18n.t('common.delete') }}</button>
           </div>
         </div>
       </div>
@@ -73,8 +73,8 @@
     <!-- Volunteers Section -->
     <section class="section">
       <div class="section-header">
-        <h2>Oportunidades de Voluntariado</h2>
-        <button class="btn-primary" (click)="openNewVolunteerModal()">➕ Nova Oportunidade</button>
+        <h2>{{ i18n.t('dashboard.ong.volunteerOpportunities') }}</h2>
+        <button class="btn-primary" (click)="openNewVolunteerModal()">➕ {{ i18n.t('dashboard.ong.newOpportunity') }}</button>
       </div>
 
       <div class="opportunities-grid" *ngIf="opportunities.length > 0">

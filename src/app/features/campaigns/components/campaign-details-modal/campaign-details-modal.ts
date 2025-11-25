@@ -167,7 +167,9 @@ export class CampaignDetailsModal implements OnInit {
         title: this.campaign?.title,
         text: text,
         url: url
-      }).catch(err => console.log('Erro ao compartilhar:', err));
+      }).catch(err => {
+        // Fallback se share API não estiver disponível
+      });
     } else {
       // Fallback: copiar para clipboard
       navigator.clipboard.writeText(`${text} - ${url}`);

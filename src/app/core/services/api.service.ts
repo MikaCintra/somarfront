@@ -26,21 +26,21 @@ export class ApiService {
   /**
    * Requisição POST
    */
-  post<T>(endpoint: string, body: any): Observable<T> {
+  post<T>(endpoint: string, body: object): Observable<T> {
     return this.http.post<T>(`${this.apiUrl}/${endpoint}`, body);
   }
 
   /**
    * Requisição PUT
    */
-  put<T>(endpoint: string, body: any): Observable<T> {
+  put<T>(endpoint: string, body: object): Observable<T> {
     return this.http.put<T>(`${this.apiUrl}/${endpoint}`, body);
   }
 
   /**
    * Requisição PATCH
    */
-  patch<T>(endpoint: string, body: any): Observable<T> {
+  patch<T>(endpoint: string, body: object): Observable<T> {
     return this.http.patch<T>(`${this.apiUrl}/${endpoint}`, body);
   }
 
@@ -54,14 +54,14 @@ export class ApiService {
   /**
    * Upload de arquivo
    */
-  uploadFile<T>(endpoint: string, file: File, additionalData?: any): Observable<T> {
+  uploadFile<T>(endpoint: string, file: File, additionalData?: Record<string, string | Blob>): Observable<T> {
     const formData = new FormData();
     formData.append('file', file);
 
     // Adicionar dados extras ao FormData
     if (additionalData) {
       Object.keys(additionalData).forEach(key => {
-        formData.append(key, additionalData[key]);
+        formData.append(key, additionalData[key] as string | Blob);
       });
     }
 

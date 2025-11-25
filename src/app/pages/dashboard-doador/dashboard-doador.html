@@ -2,8 +2,8 @@
   <!-- Header -->
   <header class="dashboard-header">
     <div>
-      <h1>Olá! Pronto para fazer a diferença? 👋</h1>
-      <p>Explore campanhas e oportunidades de voluntariado</p>
+      <h1>{{ i18n.t('dashboard.donor.welcome') }} 👋</h1>
+      <p>{{ i18n.t('dashboard.donor.subtitle') }}</p>
     </div>
     <app-theme-language-toggle></app-theme-language-toggle>
   </header>
@@ -14,17 +14,17 @@
         <div class="level-badge">
           <span class="level-icon">🏆</span>
           <div class="level-info">
-            <span class="level-label">Nível</span>
+            <span class="level-label">{{ i18n.t('dashboard.donor.level') }}</span>
             <span class="level-number">{{ userGamification.level }}</span>
           </div>
         </div>
         <div class="points-info">
-          <span class="points-label">Pontos Totais</span>
+          <span class="points-label">{{ i18n.t('dashboard.donor.totalPoints') }}</span>
           <span class="points-value">{{ userGamification.points }}</span>
         </div>
         <div class="streak-info">
           <span class="streak-icon">🔥</span>
-          <span class="streak-text">{{ userGamification.streakDays }} dias consecutivos</span>
+          <span class="streak-text">{{ userGamification.streakDays }} {{ i18n.t('dashboard.donor.consecutiveDays') }}</span>
         </div>
       </div>
       
@@ -32,11 +32,11 @@
         <div class="progress-bar-gamification">
           <div class="progress-fill-gamification" [style.width.%]="getLevelProgress()"></div>
         </div>
-        <span class="progress-text">{{ getPointsToNextLevel() }} pontos para o próximo nível</span>
+        <span class="progress-text">{{ getPointsToNextLevel() }} {{ i18n.t('common.pointsToNext') }}</span>
       </div>
 
       <div class="badges-showcase">
-        <h3>🎖️ Conquistas Desbloqueadas ({{ getUnlockedBadgesCount() }}/{{ getTotalBadgesCount() }})</h3>
+        <h3>🎖️ {{ i18n.t('dashboard.donor.achievements') }} ({{ getUnlockedBadgesCount() }}/{{ getTotalBadgesCount() }})</h3>
         <div class="badges-grid">
           <div class="badge-item" 
                *ngFor="let item of userBadgesDisplay" 
@@ -56,21 +56,21 @@
       <div class="impact-card">
         <div class="impact-icon">💝</div>
         <div class="impact-info">
-          <h3>Doações Realizadas</h3>
+          <h3>{{ i18n.t('dashboard.donor.donationsMade') }}</h3>
           <p class="impact-value">{{ myContributions.donations }}</p>
         </div>
       </div>
       <div class="impact-card">
         <div class="impact-icon">⏱️</div>
         <div class="impact-info">
-          <h3>Horas de Voluntariado</h3>
+          <h3>{{ i18n.t('dashboard.ong.volunteerHours') }}</h3>
           <p class="impact-value">{{ myContributions.volunteerHours }}h</p>
         </div>
       </div>
       <div class="impact-card">
         <div class="impact-icon">❤️</div>
         <div class="impact-info">
-          <h3>Pessoas Impactadas</h3>
+          <h3>{{ i18n.t('dashboard.donor.impactedPeople') }}</h3>
           <p class="impact-value">{{ myContributions.impactedPeople }}+</p>
         </div>
       </div>
@@ -79,57 +79,82 @@
     <!-- Featured Campaigns -->
     <section class="section">
       <div class="section-header">
-        <h2>Campanhas Disponíveis</h2>
+        <h2>{{ i18n.t('dashboard.donor.availableCampaigns') }}</h2>
       </div>
 
       <!-- Filtros -->
       <div class="filters-container">
         <div class="filter-group">
-          <label>🔍 Buscar</label>
+          <label>🔍 {{ i18n.t('common.search') }}</label>
           <input 
             type="text" 
             [(ngModel)]="searchQuery"
             (input)="applyFilters()"
-            placeholder="Pesquisar campanhas..."
+            [placeholder]="i18n.t('dashboard.donor.searchPlaceholder')"
             class="filter-input"
           />
         </div>
 
         <div class="filter-group">
-          <label>📂 Categoria</label>
+          <label>📂 {{ i18n.t('campaign.category') }}</label>
           <select 
             [(ngModel)]="selectedCategory"
             (change)="applyFilters()"
             class="filter-select"
           >
-            <option value="">Todas</option>
-            <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+            <option value="">{{ i18n.t('common.all') }}</option>
+            <option *ngFor="let cat of categories" [value]="cat">{{ i18n.translateCategory(cat) }}</option>
           </select>
         </div>
 
         <div class="filter-group">
-          <label>⚡ Urgência</label>
+          <label>📍 {{ i18n.t('common.state') }}</label>
+          <select 
+            [(ngModel)]="selectedState"
+            (change)="onStateChange()"
+            class="filter-select"
+          >
+            <option value="">{{ i18n.t('common.allStates') }}</option>
+            <option *ngFor="let state of states" [value]="state.uf">{{ state.name }}</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label>🏙️ {{ i18n.t('common.city') }}</label>
+          <select 
+            [(ngModel)]="selectedCity"
+            (change)="applyFilters()"
+            class="filter-select"
+            [disabled]="!selectedState"
+          >
+            <option value="">{{ i18n.t('common.allCities') }}</option>
+            <option *ngFor="let city of cities" [value]="city">{{ city }}</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label>⚡ {{ i18n.t('campaign.urgency') }}</label>
           <select 
             [(ngModel)]="selectedUrgency"
             (change)="applyFilters()"
             class="filter-select"
           >
-            <option value="">Todas</option>
-            <option value="high">Urgente</option>
-            <option value="medium">Importante</option>
-            <option value="low">Normal</option>
+            <option value="">{{ i18n.t('common.all') }}</option>
+            <option value="high">{{ i18n.translateUrgency('high') }}</option>
+            <option value="medium">{{ i18n.translateUrgency('medium') }}</option>
+            <option value="low">{{ i18n.translateUrgency('low') }}</option>
           </select>
         </div>
 
-        <button class="btn-clear-filters" (click)="clearFilters()">Limpar Filtros</button>
+        <button class="btn-clear-filters" (click)="clearFilters()">{{ i18n.t('common.clearFilters') }}</button>
       </div>
 
-      <p class="results-count">{{ filteredCampaigns.length }} campanha(s) encontrada(s)</p>
+      <p class="results-count">{{ filteredCampaigns.length }} {{ i18n.t('common.results') }}</p>
 
       <div class="campaigns-grid">
         <div class="campaign-card" *ngFor="let campaign of filteredCampaigns">
           <div class="campaign-badge" [style.background-color]="getUrgencyColor(campaign.urgency)">
-            {{ campaign.urgency === 'high' ? 'Urgente' : campaign.urgency === 'medium' ? 'Importante' : 'Normal' }}
+            {{ i18n.translateUrgency(campaign.urgency || 'low') }}
           </div>
           <div class="campaign-ong">{{ campaign.ongName }}</div>
           <h3>{{ campaign.title }}</h3>
@@ -145,26 +170,26 @@
             </div>
             <span class="rating-text">
               {{ getCampaignRating(campaign.id) | number:'1.1-1' }} 
-              ({{ getCampaignReviewCount(campaign.id) }} avaliações)
+              ({{ getCampaignReviewCount(campaign.id) }} {{ i18n.t('common.reviews') }})
             </span>
           </div>
 
           <div class="campaign-meta">
             <span class="meta-item">📍 {{ campaign.location }}</span>
-            <span class="meta-item">🏷️ {{ campaign.category }}</span>
+            <span class="meta-item">🏷️ {{ i18n.translateCategory(campaign.category) }}</span>
           </div>
           <div class="campaign-progress">
             <div class="progress-bar">
               <div class="progress-fill" [style.width.%]="getProgress(campaign)"></div>
             </div>
             <div class="progress-info">
-              <span>{{ campaign.current }} / {{ campaign.goal }} itens</span>
+              <span>{{ campaign.current }} / {{ campaign.goal }} {{ i18n.t('common.items') }}</span>
               <span class="progress-percent">{{ getProgress(campaign) | number:'1.0-0' }}%</span>
             </div>
           </div>
           <div class="campaign-actions">
-            <button class="btn-details" (click)="openDetailsModal(campaign)">📋 Ver Detalhes</button>
-            <button class="btn-donate" (click)="openDonationModal(campaign)">💝 Quero Doar</button>
+            <button class="btn-details" (click)="openDetailsModal(campaign)">📋 {{ i18n.t('common.viewDetails') }}</button>
+            <button class="btn-donate" (click)="openDonationModal(campaign)">💝 {{ i18n.t('common.wantToDonate') }}</button>
           </div>
         </div>
       </div>
@@ -173,7 +198,7 @@
     <!-- Volunteer Opportunities -->
     <section class="section">
       <div class="section-header">
-        <h2>Oportunidades de Voluntariado</h2>
+        <h2>{{ i18n.t('dashboard.donor.volunteerOpportunities') }}</h2>
       </div>
       <div class="opportunities-list">
         <div class="opportunity-card" *ngFor="let opp of volunteerOpportunities; let i = index">
@@ -185,10 +210,10 @@
               <span class="opp-detail">📅 {{ opp.date | date:'dd/MM' }}</span>
               <span class="opp-detail">⏰ {{ opp.time }}</span>
               <span class="opp-detail">📍 {{ opp.location }}</span>
-              <span class="opp-detail">👥 {{ getAvailableSpots(opp) }} vagas</span>
+              <span class="opp-detail">👥 {{ getAvailableSpots(opp) }} {{ i18n.t('common.spots') }}</span>
             </div>
           </div>
-          <button class="btn-volunteer" (click)="volunteer(i)">Quero Participar</button>
+          <button class="btn-volunteer" (click)="volunteer(i)">{{ i18n.t('common.wantToParticipate') }}</button>
         </div>
       </div>
     </section>

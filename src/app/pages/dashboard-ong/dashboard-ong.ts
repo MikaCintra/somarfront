@@ -10,6 +10,7 @@ import { ThemeLanguageToggle } from '../../shared/components/theme-language-togg
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MOCK_DONORS, DONORS_STATS } from '../../shared/data/mock-donors.data';
 import { DonorProfile } from '../../shared/models/user.interface';
+import { I18nService } from '../../core/services/i18n.service';
 
 @Component({
   selector: 'app-dashboard-ong',
@@ -59,6 +60,7 @@ export class DashboardOng implements OnInit {
   unreadMessagesCount: number = 0;
 
   constructor(
+    public i18n: I18nService,
     private router: Router,
     private loginService: LoginService,
     private campaignsService: CampaignsService,

@@ -1,6 +1,5 @@
 // Interfaces
 export * from './models/auth.interface';
-export * from './models/campaign.interface';
 export type { VolunteerOpportunity, VolunteerProfile } from './models/volunteer.interface';
 export * from './models/marketplace.interface';
 export * from './models/report.interface';

@@ -26,8 +26,8 @@ export class PrimaryInput implements ControlValueAccessor{
   @Input() inputName: string = "";
 
   value: string = ''
-  onChange: any = () => {}
-  onTouched: any = () => {}
+  onChange: (value: string | number) => void = () => {}
+  onTouched: () => void = () => {}
 
   onInput(event: Event){
     const value = (event.target as HTMLInputElement).value
@@ -38,11 +38,9 @@ export class PrimaryInput implements ControlValueAccessor{
       this.value = this.value
   }
 
-  registerOnChange(fn: any): void {
-      this.onChange = fn
-  }
-
-  registerOnTouched(fn: any): void {
+  registerOnChange(fn: (value: string | number) => void): void {
+    this.onChange = fn
+  }  registerOnTouched(fn: () => void): void {
     this.onTouched = fn
   }
 

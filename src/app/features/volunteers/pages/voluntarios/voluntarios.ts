@@ -115,7 +115,6 @@ export class Voluntarios implements OnInit {
   }
 
   viewDetails(opp: VolunteerOpportunity) {
-    console.log('Ver detalhes:', opp);
     // Futura implementação de modal de detalhes
   }
 }

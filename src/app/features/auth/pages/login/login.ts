@@ -31,7 +31,6 @@ export class Login {
   }
 
   submit(){
-    console.log(this.loginForm.value)
     this.loginService.login(this.loginForm.value.email, this.loginForm.value.senha).subscribe({
       next: () => {
         const userType = this.loginService.getUserType();

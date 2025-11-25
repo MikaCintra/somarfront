@@ -84,7 +84,7 @@ export class Overview implements OnInit {
   getTotalVolunteerHours(): number {
     // Calcula total de horas de todos os voluntários confirmados
     const allRegistrations = this.volunteerService.getAllRegistrations();
-    return allRegistrations.filter((r: any) => r.status === 'confirmed').length * 4;
+    return allRegistrations.filter(r => r.status === 'confirmed').length * 4;
   }
 
   getUserDonationsCount(): number {

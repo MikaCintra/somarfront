@@ -85,7 +85,7 @@ export class ChatService {
     const data = sessionStorage.getItem(this.conversationsKey);
     if (!data) return [];
     const conversations = JSON.parse(data);
-    return conversations.map((c: any) => ({
+    return conversations.map((c: Conversation) => ({
       ...c,
       participantNames: new Map(Object.entries(c.participantNames || {})),
       createdAt: new Date(c.createdAt),
@@ -153,7 +153,7 @@ export class ChatService {
   getAllMessages(): Message[] {
     const data = sessionStorage.getItem(this.messagesKey);
     if (!data) return [];
-    return JSON.parse(data).map((m: any) => ({
+    return JSON.parse(data).map((m: Message) => ({
       ...m,
       timestamp: new Date(m.timestamp)
     }));

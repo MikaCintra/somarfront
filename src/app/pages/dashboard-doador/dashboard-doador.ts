@@ -13,6 +13,10 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { FormsModule } from '@angular/forms';
 import { MOCK_DONORS } from '../../shared/data/mock-donors.data';
 import { DonorProfile } from '../../shared/models/user.interface';
+import { I18nService } from '../../core/services/i18n.service';
+import { BRAZILIAN_STATES, State, getCitiesByState } from '../../shared/data/brazil-locations.data';
+import { ChatService } from '../../features/chat/services/chat.service';
+import { LoggerService } from '../../core/services/logger.service';
 
 @Component({
   selector: 'app-dashboard-doador',
@@ -28,8 +32,12 @@ export class DashboardDoador implements OnInit {
   selectedCategory = '';
   selectedUrgency = '';
   searchQuery = '';
+  selectedState = '';
+  selectedCity = '';
 
   categories = ['Roupas', 'Alimentos', 'Educação', 'Móveis', 'Brinquedos', 'Higiene', 'Outros'];
+  states = BRAZILIAN_STATES;
+  cities: string[] = [];
 
   volunteerOpportunities: VolunteerOpportunity[] = [];
   isVolunteerRegistrationModalOpen = false;
@@ -56,12 +64,15 @@ export class DashboardDoador implements OnInit {
   userBadgesDisplay: { badge: Badge; achievement: Achievement | null }[] = [];
 
   constructor(
+    public i18n: I18nService,
     private router: Router,
     private loginService: LoginService,
     private campaignsService: CampaignsService,
     private volunteerService: VolunteerService,
     private reviewsService: ReviewsService,
-    private gamificationService: GamificationService
+    private gamificationService: GamificationService,
+    private chatService: ChatService,
+    private logger: LoggerService
   ) {
     this.initDonationForm();
     this.initVolunteerRegistrationForm();
@@ -150,7 +161,10 @@ export class DashboardDoador implements OnInit {
           ? 'Você se comprometeu a entregar a doação no endereço da ONG.'
           : 'A ONG entrará em contato para combinar a retirada no seu endereço.';
         
-        alert(`✅ Doação registrada com sucesso!\n\n${formValue.quantity} ${formValue.itemDescription} para "${this.selectedCampaign.title}"\n\n${deliveryMessage}`);
+        // Criar chat automaticamente com a ONG
+        this.createChatWithOng(this.selectedCampaign, 'doação');
+        
+        alert(`✅ Doação registrada com sucesso!\n\n${formValue.quantity} ${formValue.itemDescription} para "${this.selectedCampaign.title}"\n\n${deliveryMessage}\n\n💬 Um chat foi iniciado com a ONG para você coordenar os detalhes da doação. Acesse o menu "Chat" para conversar.`);
         
         this.closeDonationModal();
         this.loadCampaigns(); // Recarrega as campanhas com dados atualizados
@@ -167,14 +181,31 @@ export class DashboardDoador implements OnInit {
         campaign.description.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
         campaign.ongName.toLowerCase().includes(this.searchQuery.toLowerCase());
       
-      return matchesCategory && matchesUrgency && matchesSearch;
+      // Filtro por estado e cidade
+      const matchesState = !this.selectedState || (campaign.location?.includes(this.selectedState) ?? false);
+      const matchesCity = !this.selectedCity || (campaign.location?.includes(this.selectedCity) ?? false);
+      
+      return matchesCategory && matchesUrgency && matchesSearch && matchesState && matchesCity;
     });
+  }
+
+  onStateChange() {
+    this.selectedCity = '';
+    if (this.selectedState) {
+      this.cities = getCitiesByState(this.selectedState);
+    } else {
+      this.cities = [];
+    }
+    this.applyFilters();
   }
 
   clearFilters() {
     this.selectedCategory = '';
     this.selectedUrgency = '';
     this.searchQuery = '';
+    this.selectedState = '';
+    this.selectedCity = '';
+    this.cities = [];
     this.applyFilters();
   }
 
@@ -197,7 +228,7 @@ export class DashboardDoador implements OnInit {
       const stats = this.reviewsService.getReviewStats(campaignId);
       return stats ? stats.averageRating : 0;
     } catch (e) {
-      console.error('Error fetching review stats', e);
+      this.logger.error('Error fetching review stats', e);
       return 0;
     }
   }
@@ -207,7 +238,7 @@ export class DashboardDoador implements OnInit {
       const stats = this.reviewsService.getReviewStats(campaignId);
       return stats ? stats.totalReviews : 0;
     } catch (e) {
-      console.error('Error fetching review count', e);
+      this.logger.error('Error fetching review count', e);
       return 0;
     }
   }
@@ -265,7 +296,10 @@ export class DashboardDoador implements OnInit {
       });
 
       if (registration) {
-        alert(`✅ Inscrição realizada com sucesso!\n\nVocê se inscreveu para "${this.selectedOpportunity.title}"\n\nA ONG "${this.selectedOpportunity.ongName}" entrará em contato para confirmar sua participação.`);
+        // Criar chat automaticamente com a ONG
+        this.createChatWithOng(this.selectedOpportunity, 'voluntariado');
+        
+        alert(`✅ Inscrição realizada com sucesso!\n\nVocê se inscreveu para "${this.selectedOpportunity.title}"\n\nA ONG "${this.selectedOpportunity.ongName}" entrará em contato para confirmar sua participação.\n\n💬 Um chat foi iniciado com a ONG para você coordenar os detalhes. Acesse o menu "Chat" para conversar.`);
         
         this.myContributions.volunteerHours += 4; // Estimativa
         this.closeVolunteerRegistrationModal();
@@ -319,6 +353,48 @@ export class DashboardDoador implements OnInit {
 
   getTotalBadgesCount(): number {
     return this.userBadgesDisplay.length;
+  }
+
+  // Criar chat automaticamente com a ONG
+  createChatWithOng(item: Campaign | VolunteerOpportunity, type: 'doação' | 'voluntariado') {
+    const currentUserEmail = sessionStorage.getItem('user-email') || '';
+    const currentUserName = sessionStorage.getItem('username') || 'Usuário';
+    
+    // Determinar o email e nome da ONG (simplificado - na prática viria do banco)
+    const ongEmail = 'ong@somar.com'; // Email padrão da ONG
+    const ongName = 'ongName' in item ? item.ongName : 'ONG';
+    
+    // Verificar se já existe uma conversa entre o usuário e a ONG
+    const existingConversations = this.chatService.getUserConversations(currentUserEmail);
+    let conversation = existingConversations.find(c => 
+      c.participants.includes(ongEmail) && c.participants.includes(currentUserEmail)
+    );
+    
+    // Se não existe, criar nova conversa
+    if (!conversation) {
+      const participantNames = new Map<string, string>([
+        [currentUserEmail, currentUserName],
+        [ongEmail, ongName]
+      ]);
+      
+      conversation = this.chatService.createConversation(
+        [currentUserEmail, ongEmail],
+        participantNames
+      );
+    }
+    
+    // Enviar mensagem inicial automática
+    const itemTitle = 'title' in item ? item.title : '';
+    const message = type === 'doação' 
+      ? `Olá! Acabei de realizar uma doação para a campanha "${itemTitle}". Gostaria de coordenar os detalhes da entrega.`
+      : `Olá! Acabei de me inscrever como voluntário em "${itemTitle}". Estou à disposição para mais informações.`;
+    
+    this.chatService.sendMessage(
+      conversation.id,
+      currentUserEmail,
+      currentUserName,
+      message
+    );
   }
 
   logout() {

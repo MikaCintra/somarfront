@@ -4,69 +4,69 @@
     <div class="sidebar-header">
       <h2>🌟 SOMAR</h2>
       <p class="user-info">{{ currentUserName }}</p>
-      <span class="user-type-badge" [ngClass]="userType">{{ userType === 'ong' ? 'ONG' : 'Doador' }}</span>
+      <span class="user-type-badge" [ngClass]="userType">{{ getUserTypeLabel() }}</span>
     </div>
 
     <nav class="sidebar-nav">
       <!-- Dashboard -->
       <a [routerLink]="getDashboardRoute()" routerLinkActive="active" class="nav-item">
         <span>📊</span>
-        Dashboard
+        {{ i18n.t('nav.dashboard') }}
       </a>
 
       <!-- Visão Geral / Overview -->
       <a routerLink="/overview" routerLinkActive="active" class="nav-item">
         <span>👁️</span>
-        Visão Geral
+        {{ i18n.t('nav.overview') }}
       </a>
 
       <!-- Campanhas -->
       <a routerLink="/campanhas" routerLinkActive="active" class="nav-item">
         <span>📢</span>
-        Campanhas
+        {{ i18n.t('nav.campaigns') }}
       </a>
 
       <!-- Voluntários -->
       <a routerLink="/voluntarios" routerLinkActive="active" class="nav-item">
         <span>🤝</span>
-        Voluntários
+        {{ i18n.t('nav.volunteers') }}
       </a>
 
       <!-- Doações -->
       <a routerLink="/doacoes" routerLinkActive="active" class="nav-item">
         <span>💝</span>
-        Doações
+        {{ i18n.t('nav.donations') }}
       </a>
 
       <!-- Marketplace -->
       <a routerLink="/marketplace" routerLinkActive="active" class="nav-item">
         <span>🛒</span>
-        Marketplace
+        {{ i18n.t('nav.marketplace') }}
       </a>
 
       <!-- Analytics -->
       <a routerLink="/analytics" routerLinkActive="active" class="nav-item">
         <span>📈</span>
-        Analytics
+        {{ i18n.t('nav.analytics') }}
       </a>
 
       <!-- Relatórios -->
       <a routerLink="/reports" routerLinkActive="active" class="nav-item">
         <span>📋</span>
-        Relatórios
+        {{ i18n.t('nav.reports') }}
       </a>
 
       <!-- Chat -->
       <a routerLink="/chat" routerLinkActive="active" class="nav-item chat-link">
         <span>💬</span>
-        Mensagens
+        {{ i18n.t('nav.messages') }}
         <span class="unread-badge" *ngIf="unreadMessagesCount > 0">{{ unreadMessagesCount }}</span>
       </a>
 
       <!-- Configurações -->
       <a routerLink="/configuracoes" routerLinkActive="active" class="nav-item">
         <span>⚙️</span>
-        Configurações
+        {{ i18n.t('nav.settings') }}
       </a>
     </nav>
 
@@ -74,7 +74,7 @@
       <app-theme-language-toggle></app-theme-language-toggle>
       <button class="btn-logout" (click)="logout()">
         <span>🚪</span>
-        Sair
+        {{ i18n.t('nav.logout') }}
       </button>
     </div>
   </aside>

@@ -106,6 +106,6 @@ export class Campanhas implements OnInit {
 
   viewCampaign(campaign: Campaign) {
     // Futura implementação do modal de detalhes
-    console.log('Ver detalhes da campanha:', campaign);
+    // Ver detalhes da campanha: campaign
   }
 }

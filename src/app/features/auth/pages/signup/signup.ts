@@ -44,7 +44,6 @@ export class Signup {
   }
 
   submit(){
-    console.log(this.signupForm.value)
     const userType = this.signupForm.value.userType;
     
     this.loginService.signup(
