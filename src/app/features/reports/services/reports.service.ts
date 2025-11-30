@@ -129,13 +129,13 @@ export class ReportsService {
       report += `CAMPANHAS (${campaigns.length})\n`;
       report += `---------------\n`;
       campaigns.forEach(campaign => {
-        const progress = campaign.goal > 0 
-          ? Math.round((campaign.current / campaign.goal) * 100) 
+        const progress = campaign.meta > 0 
+          ? Math.round((campaign.current || 0 / campaign.meta) * 100) 
           : 0;
-        report += `- ${campaign.title}\n`;
+        report += `- ${campaign.titulo}\n`;
         report += `  ONG: ${campaign.ongName}\n`;
         report += `  Categoria: ${campaign.category}\n`;
-        report += `  Progresso: ${campaign.current}/${campaign.goal} (${progress}%)\n`;
+        report += `  Progresso: ${campaign.current}/${campaign.meta} (${progress}%)\n`;
         report += `  Doações: ${campaign.donations?.length || 0}\n`;
         report += `  Status: ${campaign.status}\n\n`;
       });
@@ -165,7 +165,7 @@ export class ReportsService {
         : this.campaignsService.getAllCampaigns();
       
       const allDonations = campaigns.flatMap(c => 
-        (c.donations || []).map(d => ({ ...d, campaignTitle: c.title }))
+        (c.donations || []).map(d => ({ ...d, campaignTitle: c.titulo }))
       );
 
       report += `DOAÇÕES RECENTES (${allDonations.length})\n`;

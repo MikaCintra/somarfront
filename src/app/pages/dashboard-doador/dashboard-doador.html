@@ -132,8 +132,8 @@
             {{ campaign.urgency === 'high' ? 'Urgente' : campaign.urgency === 'medium' ? 'Importante' : 'Normal' }}
           </div>
           <div class="campaign-ong">{{ campaign.ongName }}</div>
-          <h3>{{ campaign.title }}</h3>
-          <p class="campaign-description">{{ campaign.description }}</p>
+          <h3>{{ campaign.titulo }}</h3>
+          <p class="campaign-description">{{ campaign.descricao }}</p>
           
           <!-- Rating Section -->
           <div class="campaign-rating">
@@ -150,7 +150,7 @@
           </div>
 
           <div class="campaign-meta">
-            <span class="meta-item">📍 {{ campaign.location }}</span>
+            <span class="meta-item">📍 {{ campaign.localizacao }}</span>
             <span class="meta-item">🏷️ {{ campaign.category }}</span>
           </div>
           <div class="campaign-progress">
@@ -158,7 +158,7 @@
               <div class="progress-fill" [style.width.%]="getProgress(campaign)"></div>
             </div>
             <div class="progress-info">
-              <span>{{ campaign.current }} / {{ campaign.goal }} itens</span>
+              <span>{{ campaign.current }} / {{ campaign.meta} itens</span>
               <span class="progress-percent">{{ getProgress(campaign) | number:'1.0-0' }}%</span>
             </div>
           </div>
@@ -196,14 +196,14 @@
 <!-- Modal de Doação -->
 <app-modal 
   [isOpen]="isDonationModalOpen" 
-  [title]="'Fazer Doação - ' + (selectedCampaign?.title || '')"
+  [title]="'Fazer Doação - ' + (selectedCampaign?.titulo || '')"
   size="medium"
   (close)="closeDonationModal()">
   
   <div class="donation-info" *ngIf="selectedCampaign">
     <p><strong>ONG:</strong> {{ selectedCampaign.ongName }}</p>
     <p><strong>Categoria:</strong> {{ selectedCampaign.category }}</p>
-    <p><strong>Localização:</strong> {{ selectedCampaign.location }}</p>
+    <p><strong>Localização:</strong> {{ selectedCampaign.localizacao }}</p>
   </div>
 
   <form [formGroup]="donationForm" (ngSubmit)="submitDonation()">

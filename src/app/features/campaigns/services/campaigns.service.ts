@@ -16,20 +16,24 @@ export interface Donation {
 
 export interface Campaign {
   id: number;
-  ongEmail: string;
-  ongName: string;
-  title: string;
-  description: string;
-  goal: number;
-  current: number;
-  category: string;
+  titulo: string;
+  descricao: string;
+  meta: number;
+  localizacao: string;
+
+  
+  ongName?: string;
+  ongEmail?: string;
+  current?: number;
+  category?: string;
   urgency?: 'high' | 'medium' | 'low';
   urgent?: boolean;
-  location?: string;
-  status: string;
+  status?: string;
   createdAt: Date;
   donations?: Donation[];
 }
+
+
 
 interface SaveCampaignRequest{
   titulo: string;
@@ -60,13 +64,13 @@ export class CampaignsService {
           id: 1,
           ongEmail: 'ong@somar.com',
           ongName: 'ONG Esperança',
-          title: 'Campanha do Agasalho 2025',
-          description: 'Arrecadação de roupas de inverno para famílias carentes',
-          goal: 500,
+          titulo: 'Campanha do Agasalho 2025',
+          descricao: 'Arrecadação de roupas de inverno para famílias carentes',
+          meta: 500,
           current: 320,
           category: 'Roupas',
           urgency: 'high',
-          location: 'São Paulo, SP',
+          localizacao: 'São Paulo, SP',
           status: 'active',
           createdAt: new Date('2024-10-15')
         },
@@ -74,13 +78,13 @@ export class CampaignsService {
           id: 2,
           ongEmail: 'ong@somar.com',
           ongName: 'ONG Esperança',
-          title: 'Alimentos Não Perecíveis',
-          description: 'Doação de alimentos para cestas básicas',
-          goal: 1000,
+          titulo: 'Alimentos Não Perecíveis',
+          descricao: 'Doação de alimentos para cestas básicas',
+          meta: 1000,
           current: 750,
           category: 'Alimentos',
           urgency: 'medium',
-          location: 'São Paulo, SP',
+          localizacao: 'São Paulo, SP',
           status: 'active',
           createdAt: new Date('2024-10-20')
         },
@@ -88,13 +92,13 @@ export class CampaignsService {
           id: 3,
           ongEmail: 'ong@somar.com',
           ongName: 'ONG Esperança',
-          title: 'Material Escolar',
-          description: 'Itens escolares para crianças carentes',
-          goal: 300,
+          titulo: 'Material Escolar',
+          descricao: 'Itens escolares para crianças carentes',
+          meta: 300,
           current: 180,
           category: 'Educação',
           urgency: 'high',
-          location: 'São Paulo, SP',
+          localizacao: 'São Paulo, SP',
           status: 'active',
           createdAt: new Date('2024-11-01')
         },
@@ -102,13 +106,13 @@ export class CampaignsService {
           id: 4,
           ongEmail: 'admin@somar.com',
           ongName: 'Lar Feliz',
-          title: 'Móveis e Eletrodomésticos',
-          description: 'Doação de móveis e eletrodomésticos para famílias que perderam tudo em enchentes',
-          goal: 150,
+          titulo: 'Móveis e Eletrodomésticos',
+          descricao: 'Doação de móveis e eletrodomésticos para famílias que perderam tudo em enchentes',
+          meta: 150,
           current: 45,
           category: 'Móveis',
           urgency: 'high',
-          location: 'Porto Alegre, RS',
+          localizacao: 'Porto Alegre, RS',
           status: 'active',
           createdAt: new Date('2024-10-25')
         },
@@ -116,13 +120,13 @@ export class CampaignsService {
           id: 5,
           ongEmail: 'admin@somar.com',
           ongName: 'Infância Feliz',
-          title: 'Brinquedos para o Dia das Crianças',
-          description: 'Arrecadação de brinquedos para distribuir no Dia das Crianças',
-          goal: 400,
+          titulo: 'Brinquedos para o Dia das Crianças',
+          descricao: 'Arrecadação de brinquedos para distribuir no Dia das Crianças',
+          meta: 400,
           current: 290,
           category: 'Brinquedos',
           urgency: 'low',
-          location: 'Brasília, DF',
+          localizacao: 'Brasília, DF',
           status: 'active',
           createdAt: new Date('2024-09-10')
         },
@@ -130,13 +134,13 @@ export class CampaignsService {
           id: 6,
           ongEmail: 'admin@somar.com',
           ongName: 'Saúde para Todos',
-          title: 'Produtos de Higiene',
-          description: 'Kits de higiene pessoal para comunidades carentes',
-          goal: 600,
+          titulo: 'Produtos de Higiene',
+          descricao: 'Kits de higiene pessoal para comunidades carentes',
+          meta: 600,
           current: 380,
           category: 'Higiene',
           urgency: 'medium',
-          location: 'Salvador, BA',
+          localizacao: 'Salvador, BA',
           status: 'active',
           createdAt: new Date('2024-10-05')
         }
@@ -234,7 +238,7 @@ export class CampaignsService {
     
     if (campaign) {
       return this.updateCampaign(campaignId, {
-        current: campaign.current + quantity
+        current: campaign.meta + quantity
       });
     }
     

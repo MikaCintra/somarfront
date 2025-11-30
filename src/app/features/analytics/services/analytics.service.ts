@@ -119,14 +119,14 @@ export class AnalyticsService {
       const donations = campaign.donations || [];
       const items = donations.reduce((sum, d) => sum + d.quantity, 0);
       
-      if (categoryMap.has(category)) {
-        const current = categoryMap.get(category)!;
-        categoryMap.set(category, {
+      if (categoryMap.has(category || '')) {
+        const current = categoryMap.get(category || '')!;
+        categoryMap.set(category || '', {
           count: current.count + donations.length,
           items: current.items + items
         });
       } else {
-        categoryMap.set(category, { count: donations.length, items });
+        categoryMap.set(category || '', { count: donations.length, items });
       }
     });
     
@@ -226,8 +226,8 @@ export class AnalyticsService {
     
     return campaigns.map(campaign => {
       const donationsCount = campaign.donations?.length || 0;
-      const progress = campaign.goal > 0 
-        ? Math.round((campaign.current / campaign.goal) * 100) 
+      const progress = campaign.meta > 0 
+        ? Math.round((campaign.current || 0/ campaign.meta) * 100) 
         : 0;
       
       let status: 'excellent' | 'good' | 'needs-attention';
@@ -237,7 +237,7 @@ export class AnalyticsService {
       
       return {
         id: campaign.id,
-        title: campaign.title,
+        title: campaign.titulo,
         donationsCount,
         progress,
         status

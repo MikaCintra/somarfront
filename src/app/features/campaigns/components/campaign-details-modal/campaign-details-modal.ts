@@ -160,11 +160,11 @@ export class CampaignDetailsModal implements OnInit {
 
   shareCampaign() {
     const url = window.location.href;
-    const text = `Confira essa campanha: ${this.campaign?.title}`;
+    const text = `Confira essa campanha: ${this.campaign?.titulo}`;
     
     if (navigator.share) {
       navigator.share({
-        title: this.campaign?.title,
+        title: this.campaign?.titulo,
         text: text,
         url: url
       }).catch(err => console.log('Erro ao compartilhar:', err));

@@ -93,7 +93,7 @@
         <div class="donation-header">
           <div class="donation-campaign">
             <span class="campaign-badge">{{ item.campaign.category }}</span>
-            <h3>{{ item.campaign.title }}</h3>
+            <h3>{{ item.campaign.titulo }}</h3>
           </div>
           <span class="donation-date">{{ item.donation.date | date:'dd/MM/yyyy' }}</span>
         </div>
@@ -115,9 +115,9 @@
             <span class="detail-label">🏢 ONG:</span>
             <span class="detail-value">{{ item.campaign.ongName }}</span>
           </div>
-          <div class="detail-row" *ngIf="item.campaign.location">
+          <div class="detail-row" *ngIf="item.campaign.localizacao">
             <span class="detail-label">📍 Local:</span>
-            <span class="detail-value">{{ item.campaign.location }}</span>
+            <span class="detail-value">{{ item.campaign.localizacao }}</span>
           </div>
         </div>
 

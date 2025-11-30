@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { CampaignsService, Campaign } from '../../services/campaigns.service';
+import { CampaignsApiService, Campaign } from '../../services/campaigns-api.service';
 import { ThemeLanguageToggle } from '../../../../shared/components/theme-language-toggle/theme-language-toggle';
 
 @Component({
@@ -28,7 +28,7 @@ export class Campanhas implements OnInit {
 
   constructor(
     private router: Router,
-    private campaignsService: CampaignsService
+    private campaignsService: CampaignsApiService
   ) {}
 
   ngOnInit() {
@@ -42,19 +42,24 @@ export class Campanhas implements OnInit {
     
     if (this.userType === 'ong' || isAdmin) {
       // ONG ou Admin vê suas campanhas (admin vê todas)
-      this.allCampaigns = this.campaignsService.getCampaignsByOng(this.userEmail);
+      this.campaignsService.getCampaignsByOng(this.userEmail).subscribe(campaigns => {
+        this.allCampaigns = campaigns;
+        this.filteredCampaigns = [...this.allCampaigns];
+      });
     } else {
       // Doador vê apenas campanhas ativas
-      this.allCampaigns = this.campaignsService.getActiveCampaigns();
+      this.campaignsService.getAllCampaigns().subscribe(campaigns => {
+        this.allCampaigns = campaigns;
+        this.filteredCampaigns = [...this.allCampaigns];
+      });
     }
-    this.filteredCampaigns = [...this.allCampaigns];
   }
 
   applyFilters() {
     this.filteredCampaigns = this.allCampaigns.filter(campaign => {
       const matchesSearch = !this.searchQuery || 
-        campaign.title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-        campaign.description.toLowerCase().includes(this.searchQuery.toLowerCase());
+        campaign.titulo.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+        campaign.descricao.toLowerCase().includes(this.searchQuery.toLowerCase());
       
       const matchesCategory = !this.selectedCategory || campaign.category === this.selectedCategory;
       const matchesStatus = !this.selectedStatus || campaign.status === this.selectedStatus;
@@ -73,8 +78,8 @@ export class Campanhas implements OnInit {
   }
 
   getProgressPercentage(campaign: Campaign): number {
-    if (!campaign.goal || campaign.goal === 0) return 0;
-    return Math.min(Math.round((campaign.current / campaign.goal) * 100), 100);
+    if (!campaign.meta || campaign.meta === 0) return 0;
+    return Math.min(Math.round((campaign.current || 0 / campaign.meta) * 100), 100);
   }
 
   getUrgencyColor(urgency?: string): string {

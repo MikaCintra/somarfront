@@ -81,12 +81,12 @@
             {{ getUrgencyLabel(campaign.urgency) }}
           </span>
           <span class="campaign-status" *ngIf="userType === 'ong'">
-            {{ getStatusLabel(campaign.status) }}
+            {{ getStatusLabel(campaign.status || '?') }}
           </span>
         </div>
 
-        <h3>{{ campaign.title }}</h3>
-        <p class="campaign-description">{{ campaign.description }}</p>
+        <h3>{{ campaign.titulo }}</h3>
+        <p class="campaign-description">{{ campaign.descricao }}</p>
 
         <div class="campaign-info">
           <div class="info-item">
@@ -97,16 +97,16 @@
             <span class="info-icon">📂</span>
             <span>{{ campaign.category }}</span>
           </div>
-          <div class="info-item" *ngIf="campaign.location">
+          <div class="info-item">
             <span class="info-icon">📍</span>
-            <span>{{ campaign.location }}</span>
+            <span>{{ campaign.localizacao}}</span>
           </div>
         </div>
 
         <div class="campaign-progress">
           <div class="progress-info">
             <span class="progress-current">{{ campaign.current }} itens</span>
-            <span class="progress-goal">Meta: {{ campaign.goal }}</span>
+            <span class="progress-goal">Meta: {{ campaign.meta }}</span>
           </div>
           <div class="progress-bar">
             <div class="progress-fill" [style.width.%]="getProgressPercentage(campaign)"></div>

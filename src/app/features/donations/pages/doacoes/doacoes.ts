@@ -92,7 +92,7 @@ export class Doacoes implements OnInit {
     this.categoriesCount = {};
     this.donationsWithCampaign.forEach(item => {
       const category = item.campaign.category;
-      this.categoriesCount[category] = (this.categoriesCount[category] || 0) + 1;
+      this.categoriesCount[category || ''] = (this.categoriesCount[category || ''] || 0) + 1;
     });
   }
 
@@ -100,7 +100,7 @@ export class Doacoes implements OnInit {
     return this.donationsWithCampaign.filter(item => {
       const matchesSearch = !this.searchQuery ||
         item.donation.item.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-        item.campaign.title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+        item.campaign.titulo.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
         item.donation.donorName.toLowerCase().includes(this.searchQuery.toLowerCase());
 
       const matchesCategory = !this.selectedCategory || 

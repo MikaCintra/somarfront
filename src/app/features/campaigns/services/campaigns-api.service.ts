@@ -20,7 +20,8 @@ export class CampaignsApiService {
    * Buscar todas as campanhas
    */
   getAllCampaigns(): Observable<Campaign[]> {
-    return this.apiService.get<Campaign[]>('campaigns');
+    console.log(this.apiService.get<Campaign[]>('campanha/listar'))
+    return this.apiService.get<Campaign[]>('campanha/listar');
   }
 
   /**
@@ -115,3 +116,5 @@ export class CampaignsApiService {
     return this.apiService.get(`campaigns/${campaignId}/stats`);
   }
 }
+
+export type { Campaign };

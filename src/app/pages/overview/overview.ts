@@ -104,8 +104,8 @@ export class Overview implements OnInit {
   }
 
   getProgressPercentage(campaign: Campaign): number {
-    if (!campaign.goal || campaign.goal === 0) return 0;
-    return Math.min(Math.round((campaign.current / campaign.goal) * 100), 100);
+    if (!campaign.meta || campaign.meta === 0) return 0;
+    return Math.min(Math.round((campaign.current || 0 / campaign.meta) * 100), 100);
   }
 
   navigateTo(route: string) {

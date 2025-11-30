@@ -5,7 +5,7 @@
       <div class="header-content">
         <div class="campaign-icon">{{ getCategoryIcon() }}</div>
         <div class="header-text">
-          <h2>{{ campaign.title }}</h2>
+          <h2>{{ campaign.titulo }}</h2>
           <p class="ong-name">{{ campaign.ongName }}</p>
         </div>
       </div>
@@ -88,13 +88,13 @@
           <div class="progress-bar">
             <div class="progress-fill" [style.width.%]="getProgressPercentage()"></div>
           </div>
-          <p class="progress-goal">Meta: {{ campaign.goal }}</p>
+          <p class="progress-goal">Meta: {{ campaign.meta }}</p>
         </div>
 
         <!-- Informações da Campanha -->
         <div class="info-section">
           <h3>📝 Sobre a Campanha</h3>
-          <p class="campaign-description">{{ campaign.description }}</p>
+          <p class="campaign-description">{{ campaign.descricao }}</p>
         </div>
 
         <div class="info-section">

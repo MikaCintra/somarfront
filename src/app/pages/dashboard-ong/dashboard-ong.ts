@@ -108,11 +108,11 @@ export class DashboardOng implements OnInit {
   openEditCampaignModal(campaign: Campaign) {
     this.editingCampaign = campaign;
     this.campaignForm.patchValue({
-      title: campaign.title,
-      description: campaign.description,
-      goal: campaign.goal,
+      title: campaign.titulo,
+      description: campaign.descricao,
+      goal: campaign.meta,
       category: campaign.category,
-      location: campaign.location || ''
+      location: campaign.localizacao || ''
     });
     this.isModalOpen = true;
   }
@@ -130,9 +130,9 @@ export class DashboardOng implements OnInit {
       if (this.editingCampaign) {
         // Editar campanha existente
         const success = this.campaignsService.updateCampaign(this.editingCampaign.id, {
-          title: formValue.title,
-          description: formValue.description,
-          goal: formValue.goal,
+          titulo: formValue.title,
+          descricao: formValue.description,
+          meta: formValue.goal,
           category: formValue.category
         });
 
@@ -174,7 +174,7 @@ export class DashboardOng implements OnInit {
   }
 
   getProgress(campaign: Campaign): number {
-    return (campaign.current / campaign.goal) * 100;
+    return (campaign.current || 0 / campaign.meta) * 100;
   }
 
   // === VOLUNTEER OPPORTUNITIES METHODS ===

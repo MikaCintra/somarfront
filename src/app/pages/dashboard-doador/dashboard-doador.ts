@@ -150,7 +150,7 @@ export class DashboardDoador implements OnInit {
           ? 'Você se comprometeu a entregar a doação no endereço da ONG.'
           : 'A ONG entrará em contato para combinar a retirada no seu endereço.';
         
-        alert(`✅ Doação registrada com sucesso!\n\n${formValue.quantity} ${formValue.itemDescription} para "${this.selectedCampaign.title}"\n\n${deliveryMessage}`);
+        alert(`✅ Doação registrada com sucesso!\n\n${formValue.quantity} ${formValue.itemDescription} para "${this.selectedCampaign.titulo}"\n\n${deliveryMessage}`);
         
         this.closeDonationModal();
         this.loadCampaigns(); // Recarrega as campanhas com dados atualizados
@@ -163,9 +163,10 @@ export class DashboardDoador implements OnInit {
       const matchesCategory = !this.selectedCategory || campaign.category === this.selectedCategory;
       const matchesUrgency = !this.selectedUrgency || campaign.urgency === this.selectedUrgency;
       const matchesSearch = !this.searchQuery || 
-        campaign.title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-        campaign.description.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-        campaign.ongName.toLowerCase().includes(this.searchQuery.toLowerCase());
+        campaign.titulo.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+        campaign.descricao.toLowerCase().includes(this.searchQuery.toLowerCase());
+        // ||
+        // campaign.ongName.toLowerCase().includes(this.searchQuery.toLowerCase()) || 'Sem nome informado';
       
       return matchesCategory && matchesUrgency && matchesSearch;
     });
@@ -179,7 +180,7 @@ export class DashboardDoador implements OnInit {
   }
 
   getProgress(campaign: Campaign): number {
-    return (campaign.current / campaign.goal) * 100;
+    return (campaign.current || 0 / campaign.meta) * 100;
   }
 
   getUrgencyColor(urgency: string | undefined): string {
