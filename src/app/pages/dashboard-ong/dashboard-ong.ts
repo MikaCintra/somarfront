@@ -71,7 +71,7 @@ export class DashboardOng implements OnInit {
   }
 
   ngOnInit() {
-    this.currentUserEmail = '19'
+    this.currentUserEmail = '12'
     this.currentUserName = sessionStorage.getItem('username') || 'ONG';
     this.loadCampaigns();
     this.loadOpportunities();
