@@ -70,6 +70,7 @@ export class LoginService {
       tap((response) => {
         // Salvar dados da sessão
         console.log("Response de login: ", response)
+        sessionStorage.setItem('id', response.id);
         sessionStorage.setItem('auth-token', response.token);
         sessionStorage.setItem('username', response.name);
         sessionStorage.setItem('user-email', email);

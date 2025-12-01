@@ -28,7 +28,7 @@ export class CampaignsApiService {
    * Buscar campanhas de uma ONG específica
    */
   getCampaignsByOng(ongEmail: string): Observable<Campaign[]> {
-    return this.apiService.get<Campaign[]>(`campaigns/ong/${ongEmail}`);
+    return this.apiService.get<Campaign[]>(`campanha/listar/ong/${ongEmail}`);
   }
 
   /**

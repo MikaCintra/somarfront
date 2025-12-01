@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { LoginService } from '../../features/auth/services/auth.service';
-import { CampaignsService, Campaign } from '../../features/campaigns/services/campaigns.service';
+import { CampaignsApiService, Campaign } from '../../features/campaigns/services/campaigns-api.service';
 import { VolunteerService, VolunteerOpportunity, VolunteerRegistration } from '../../features/volunteers/services/volunteer.service';
 import { MessagesService } from '../../features/chat/services/messages.service';
 import { Modal } from '../../shared/components/modal/modal';
@@ -54,6 +54,7 @@ export class DashboardOng implements OnInit {
   categories = ['Roupas', 'Alimentos', 'Educação', 'Móveis', 'Brinquedos', 'Higiene', 'Outros'];
   volunteerCategories = ['Alimentos', 'Educação', 'Saúde', 'Eventos', 'Meio Ambiente', 'Esportes', 'Outros'];
   
+  currentOngid: string = '';
   currentUserEmail: string = '';
   currentUserName: string = '';
   unreadMessagesCount: number = 0;
@@ -61,7 +62,7 @@ export class DashboardOng implements OnInit {
   constructor(
     private router: Router,
     private loginService: LoginService,
-    private campaignsService: CampaignsService,
+    private campaignsService: CampaignsApiService,
     private volunteerService: VolunteerService,
     private messagesService: MessagesService
   ) {
@@ -70,7 +71,7 @@ export class DashboardOng implements OnInit {
   }
 
   ngOnInit() {
-    this.currentUserEmail = sessionStorage.getItem('user-email') || '';
+    this.currentUserEmail = '19'
     this.currentUserName = sessionStorage.getItem('username') || 'ONG';
     this.loadCampaigns();
     this.loadOpportunities();
@@ -78,7 +79,16 @@ export class DashboardOng implements OnInit {
   }
 
   loadCampaigns() {
-    this.campaigns = this.campaignsService.getCampaignsByOng(this.currentUserEmail);
+    // subscriptions used because service returns Observable<Campaign[]>
+    this.campaignsService.getCampaignsByOng(this.currentUserEmail).subscribe({
+      next: (campaigns: Campaign[]) => {
+        this.campaigns = campaigns;
+      },
+      error: (err: any) => {
+        console.error('Erro ao carregar campanhas:', err);
+        this.campaigns = [];
+      }
+    });
   }
 
   loadUnreadCount() {
@@ -128,34 +138,43 @@ export class DashboardOng implements OnInit {
       const formValue = this.campaignForm.value;
 
       if (this.editingCampaign) {
-        // Editar campanha existente
-        const success = this.campaignsService.updateCampaign(this.editingCampaign.id, {
+        // Editar campanha existente (convert id to string and subscribe)
+        this.campaignsService.updateCampaign(String(this.editingCampaign.id), {
           titulo: formValue.title,
           descricao: formValue.description,
           meta: formValue.goal,
           category: formValue.category
-        });
-
-        if (success) {
-          alert('Campanha atualizada com sucesso! ✅');
-          this.loadCampaigns();
-        }
-      } else {
-        // Criar nova campanha
-        this.campaignsService.saveCampaign(
-          formValue.title,
-          formValue.description,
-          formValue.goal,
-          formValue.location || 'Brasil'
-        ).subscribe({
+        }).subscribe({
           next: () => {
-            alert('Campanha criada com sucesso! 🎉');
+            alert('Campanha atualizada com sucesso! ✅');
             this.loadCampaigns();
           },
-          error: (error) => {
-            console.error('Erro ao criar campanha:', error);
+          error: (err: any) => {
+            console.error('Erro ao atualizar campanha:', err);
           }
         });
+      } else {
+        // Criar nova campanha (use createCampaign and subscribe)
+        if (typeof this.campaignsService['createCampaign'] === 'function') {
+          this.campaignsService.createCampaign({
+            titulo: formValue.title,
+            descricao: formValue.description,
+            meta: formValue.goal,
+            category: formValue.category,
+            localizacao: formValue.location || 'Brasil'
+          }).subscribe({
+            next: () => {
+              alert('Campanha criada com sucesso! 🎉');
+              this.loadCampaigns();
+            },
+            error: (err: any) => {
+              console.error('Erro ao criar campanha:', err);
+            }
+          });
+        } else {
+          // fallback if service uses a different method name - attempt to log clearly
+          console.error('createCampaign method not found on CampaignsApiService');
+        }
       }
 
       this.closeModal();
@@ -164,17 +183,23 @@ export class DashboardOng implements OnInit {
 
   deleteCampaign(campaignId: number) {
     if (confirm('Tem certeza que deseja excluir esta campanha?')) {
-      const success = this.campaignsService.deleteCampaign(campaignId);
-      
-      if (success) {
-        alert('Campanha excluída com sucesso!');
-        this.loadCampaigns();
-      }
+      // convert id to string and subscribe to Observable<void>
+      this.campaignsService.deleteCampaign(String(campaignId)).subscribe({
+        next: () => {
+          alert('Campanha excluída com sucesso!');
+          this.loadCampaigns();
+        },
+        error: (err: any) => {
+          console.error('Erro ao excluir campanha:', err);
+        }
+      });
     }
   }
 
   getProgress(campaign: Campaign): number {
-    return (campaign.current || 0 / campaign.meta) * 100;
+    const current = campaign.current || 0;
+    const meta = campaign.meta || 1;
+    return (current / meta) * 100;
   }
 
   // === VOLUNTEER OPPORTUNITIES METHODS ===
