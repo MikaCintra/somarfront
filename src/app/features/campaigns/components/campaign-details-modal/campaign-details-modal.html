@@ -6,7 +6,7 @@
         <div class="campaign-icon">{{ getCategoryIcon() }}</div>
         <div class="header-text">
           <h2>{{ campaign.titulo }}</h2>
-          <p class="ong-name">{{ campaign.ongName }}</p>
+          <p class="ong-name">{{ campaign.ongNome }}</p>
         </div>
       </div>
       <button class="close-button" (click)="onClose()" aria-label="Fechar">
@@ -110,7 +110,7 @@
         <div class="info-section">
           <h3>🏢 Sobre a ONG</h3>
           <div class="ong-info">
-            <p><strong>Nome:</strong> {{ campaign.ongName }}</p>
+            <p><strong>Nome:</strong> {{ campaign.ongNome }}</p>
             <p><strong>Contato:</strong> {{ campaign.ongEmail }}</p>
           </div>
         </div>

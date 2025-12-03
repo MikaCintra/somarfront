@@ -34,7 +34,7 @@ export class CampaignsApiService {
   /**
    * Buscar campanha por ID
    */
-  getCampaignById(id: string): Observable<Campaign> {
+  getCampaignById(id: number): Observable<Campaign> {
     return this.apiService.get<Campaign>(`campanha/listar/ong/${id}`);
   }
 

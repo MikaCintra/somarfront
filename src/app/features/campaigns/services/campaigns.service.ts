@@ -22,7 +22,7 @@ export interface Campaign {
   localizacao: string;
   ongId?: number;
   
-  ongName?: string;
+  ongNome?: string;
   ongEmail?: string;
   current?: number;
   category?: string;
@@ -63,7 +63,7 @@ export class CampaignsService {
         {
           id: 1,
           ongEmail: 'ong@somar.com',
-          ongName: 'ONG Esperança',
+          ongNome: 'ONG Esperança',
           titulo: 'Campanha do Agasalho 2025',
           descricao: 'Arrecadação de roupas de inverno para famílias carentes',
           meta: 500,
@@ -77,7 +77,7 @@ export class CampaignsService {
         {
           id: 2,
           ongEmail: 'ong@somar.com',
-          ongName: 'ONG Esperança',
+          ongNome: 'ONG Esperança',
           titulo: 'Alimentos Não Perecíveis',
           descricao: 'Doação de alimentos para cestas básicas',
           meta: 1000,
@@ -91,7 +91,7 @@ export class CampaignsService {
         {
           id: 3,
           ongEmail: 'ong@somar.com',
-          ongName: 'ONG Esperança',
+          ongNome: 'ONG Esperança',
           titulo: 'Material Escolar',
           descricao: 'Itens escolares para crianças carentes',
           meta: 300,
@@ -105,7 +105,7 @@ export class CampaignsService {
         {
           id: 4,
           ongEmail: 'admin@somar.com',
-          ongName: 'Lar Feliz',
+          ongNome: 'Lar Feliz',
           titulo: 'Móveis e Eletrodomésticos',
           descricao: 'Doação de móveis e eletrodomésticos para famílias que perderam tudo em enchentes',
           meta: 150,
@@ -119,7 +119,7 @@ export class CampaignsService {
         {
           id: 5,
           ongEmail: 'admin@somar.com',
-          ongName: 'Infância Feliz',
+          ongNome: 'Infância Feliz',
           titulo: 'Brinquedos para o Dia das Crianças',
           descricao: 'Arrecadação de brinquedos para distribuir no Dia das Crianças',
           meta: 400,
@@ -133,7 +133,7 @@ export class CampaignsService {
         {
           id: 6,
           ongEmail: 'admin@somar.com',
-          ongName: 'Saúde para Todos',
+          ongNome: 'Saúde para Todos',
           titulo: 'Produtos de Higiene',
           descricao: 'Kits de higiene pessoal para comunidades carentes',
           meta: 600,

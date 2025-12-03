@@ -15,6 +15,7 @@ export class Campanhas implements OnInit {
   title = 'Campanhas';
   userType: string = '';
   userEmail: string = '';
+  ongId: number = 0;
 
   allCampaigns: Campaign[] = [];
   filteredCampaigns: Campaign[] = [];
@@ -32,6 +33,7 @@ export class Campanhas implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.ongId = Number(sessionStorage.getItem('id')) || 0;
     this.userType = sessionStorage.getItem('user-type') || '';
     this.userEmail = sessionStorage.getItem('user-email') || '';
     this.loadCampaigns();
@@ -42,8 +44,8 @@ export class Campanhas implements OnInit {
     
     if (this.userType === 'ong' || isAdmin) {
       // ONG ou Admin vê suas campanhas (admin vê todas)
-      this.campaignsService.getCampaignsByOng(this.userEmail).subscribe(campaigns => {
-        this.allCampaigns = campaigns;
+      this.campaignsService.getCampaignById(this.ongId).subscribe(campaign => {
+        this.allCampaigns = campaign ? [campaign] : [];
         this.filteredCampaigns = [...this.allCampaigns];
       });
     } else {
