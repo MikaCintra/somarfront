@@ -42,7 +42,7 @@ export class CampaignsApiService {
    * Criar nova campanha
    */
   createCampaign(campaign: Partial<Campaign>): Observable<Campaign> {
-    return this.apiService.post<Campaign>('campaigns', campaign);
+    return this.apiService.post<Campaign>('campanha/cadastrar', campaign);
   }
 
   /**

@@ -11,6 +11,7 @@ export interface Campaign {
   status: 'active' | 'completed' | 'cancelled';
   startDate: Date;
   endDate: Date;
+  ongId: number;
   ongName: string;
   ongEmail: string;
   location: string;

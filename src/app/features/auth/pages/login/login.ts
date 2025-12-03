@@ -22,6 +22,7 @@ export class Login {
   constructor(
     private router: Router,
     private loginService: LoginService,
+    
     // private toastService: ToastrService
   ) {
     this.loginForm = new FormGroup({
@@ -32,6 +33,7 @@ export class Login {
 
   submit(){
     console.log(this.loginForm.value)
+    
     this.loginService.login(this.loginForm.value.email, this.loginForm.value.senha).subscribe({
       next: () => {
         const tipo = this.loginService.getUserType();
@@ -50,6 +52,17 @@ export class Login {
       },
       error: () => alert("Erro ao fazer login. Verifique suas credenciais.")
     })
+
+    this.loginService.getPerfilComHeader(this.loginForm.value).subscribe({
+      next: (response) => {
+        console.log("Resposta do perfil com header: ", response)
+      },
+      error: (error) => {
+        console.error("Erro ao buscar perfil com header: ", error)
+      }
+    })
+
+    // this.userService.getPerfilComHeader(this.loginForm.value)
   }
 
   navigate(){

@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { LoginResponse } from '../../../shared/models/auth.interface';
 import { Observable, of, throwError } from 'rxjs';
@@ -28,6 +28,7 @@ interface SignupRequest {
 @Injectable({
   providedIn: 'root'
 })
+
 export class LoginService {
 
   // Usuários mockados para teste
@@ -65,7 +66,7 @@ export class LoginService {
 
     // Produção: usar API real
     const request: LoginRequest = { email, senha };
-    
+
     return this.apiService.post<LoginResponse>('auth/login', request).pipe(
       tap((response) => {
         // Salvar dados da sessão
@@ -91,18 +92,18 @@ export class LoginService {
    */
   // private mockLogin(email: string, senha: string): Observable<LoginResponse> {
   //   const user = this.mockUsers.find(u => u.email === email && u.senha === senha);
-    
+
   //   if (user) {
   //     const response: LoginResponse = {
   //       //token: 'mock-token-' + Date.now(),
   //       name: user.name
   //     };
-      
+
   //     //sessionStorage.setItem('auth-token', response.token);
   //     sessionStorage.setItem('username', response.name);
   //     sessionStorage.setItem('user-email', user.email);
   //     sessionStorage.setItem('user-tipo', user.tipo);
-      
+
   //     // Simula delay de rede
   //     return of(response).pipe(delay(500));
   //   } else {
@@ -118,7 +119,7 @@ export class LoginService {
 
     // Produção: usar API real
     const request: SignupRequest = { nome, email, senha, tipo };
-    
+
     return this.apiService.post<LoginResponse>('auth/register', request).pipe(
       tap((response) => {
         console.log("Response:", response)
@@ -144,12 +145,12 @@ export class LoginService {
   //     name: nome,
   //     userType: ''
   //   };
-    
+
   //   //sessionStorage.setItem('auth-token', response.token);
   //   sessionStorage.setItem('username', nome);
   //   sessionStorage.setItem('user-email', email);
   //   sessionStorage.setItem('user-type', userType);
-    
+
   //   return of(response).pipe(delay(500));
   // }
 
@@ -172,7 +173,7 @@ export class LoginService {
   logout(): void {
     // Limpar sessão local
     sessionStorage.clear();
-    
+
     // Se estiver usando API real, notificar o backend
     if (!environment.enableMockData) {
       this.apiService.post('auth/logout', {}).subscribe({
@@ -192,7 +193,7 @@ export class LoginService {
       if (data.telefone) sessionStorage.setItem('user-phone', data.telefone);
       if (data.endereco) sessionStorage.setItem('user-address', data.endereco);
       if (data.bio) sessionStorage.setItem('user-bio', data.bio);
-      
+
       return of({ success: true, message: 'Perfil atualizado' }).pipe(delay(300));
     }
 
@@ -213,6 +214,30 @@ export class LoginService {
       newPassword
     });
   }
+
+  getPerfilComHeader(value: any): Observable<any> {
+    const userId = sessionStorage.getItem('id');
+
+    const headers = new HttpHeaders({
+      'X-User-Id': userId || ''  // ✅ Header personalizado
+    });
+
+    return this.httpClient.get('/api/perfil', { headers });
+  }
 }
 
+// export class UserService {
+//   constructor(private http: HttpClient) { }
+
+
+//   getPerfilComHeader(value: any): Observable<any> {
+//     const userId = sessionStorage.getItem('id');
+
+//     const headers = new HttpHeaders({
+//       'X-User-Id': userId || ''  // ✅ Header personalizado
+//     });
+
+//     return this.http.get('/api/perfil', { headers });
+//   }
+// }
 

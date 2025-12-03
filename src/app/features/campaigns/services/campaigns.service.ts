@@ -20,7 +20,7 @@ export interface Campaign {
   descricao: string;
   meta: number;
   localizacao: string;
-
+  ongId?: number;
   
   ongName?: string;
   ongEmail?: string;

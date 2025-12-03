@@ -54,7 +54,7 @@ export class DashboardOng implements OnInit {
   categories = ['Roupas', 'Alimentos', 'Educação', 'Móveis', 'Brinquedos', 'Higiene', 'Outros'];
   volunteerCategories = ['Alimentos', 'Educação', 'Saúde', 'Eventos', 'Meio Ambiente', 'Esportes', 'Outros'];
   
-  currentOngid: string = '';
+  currentOngid: number = Number(sessionStorage.getItem('id')) || 0;
   currentUserEmail: string = '';
   currentUserName: string = '';
   unreadMessagesCount: number = 0;
@@ -161,7 +161,8 @@ export class DashboardOng implements OnInit {
             descricao: formValue.description,
             meta: formValue.goal,
             category: formValue.category,
-            localizacao: formValue.location || 'Brasil'
+            localizacao: formValue.location || 'Brasil',
+            ongId: this.currentOngid || 0
           }).subscribe({
             next: () => {
               alert('Campanha criada com sucesso! 🎉');
